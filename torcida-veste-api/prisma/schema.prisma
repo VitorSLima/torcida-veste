@@ -18,7 +18,7 @@ model Order {
   address_id   String
   Address      Address      @relation(fields: [address_id], references: [id])
   client_id    String
-  Client       Client       @relation(fields: [client_id], references: [id])
+  User         User       @relation(fields: [client_id], references: [id])
 }
 
 model Address {
@@ -33,7 +33,7 @@ model Address {
   Order              Order[]
 }
 
-model Client {
+model User {
   id              String  @id @unique @default(uuid())
   clientFirstName String
   clientLastName  String
@@ -41,6 +41,7 @@ model Client {
   clientCpf       String
   clientPhone     String
   Order           Order[]
+  role            ROLE
 }
 
 model OrderItem {
@@ -94,6 +95,11 @@ model League {
   id       String    @id @unique @default(uuid())
   name     String
   Products Product[]
+}
+
+enum ROLE {
+  ADMIN
+  CLIENT
 }
 
 enum ORDER_STATUS {
