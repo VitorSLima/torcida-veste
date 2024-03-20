@@ -7,22 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Session {
+  id            String   @id
+  refresh_token String
+  expires_at    DateTime
+  user_id       String
+  User          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("sessions")
+}
+
+model User {
+  id       String    @id @unique @default(uuid())
+  email    String    @unique
+  password String
+  role     ROLE
+  sessions Session[]
+}
+
 model Order {
   id           String       @id @unique @default(uuid())
   payment_id   String
   payment_url  String
-  order_status ORDER_STATUS
   created_at   DateTime
   updated_at   DateTime
-  OrderItems   OrderItem[]
   address_id   String
-  Address      Address      @relation(fields: [address_id], references: [id])
   client_id    String
+  order_status ORDER_STATUS
+  OrderItems   OrderItem[]
+  Address      Address      @relation(fields: [address_id], references: [id])
   Client       Client       @relation(fields: [client_id], references: [id])
 }
 
 model Address {
-  id                 String  @id @unique @default(uuid())
+  id                 String   @id @unique @default(uuid())
   clientZipCode      String
   clientAddress      String
   clientNumber       String
@@ -34,13 +53,6 @@ model Address {
   Client             Client[]
 }
 
-model User {
-  id       Int      @id @unique @default(autoincrement())
-  email    String   @unique
-  password String
-  role     ROLE
-}
-
 model Client {
   id              String  @id @unique @default(uuid())
   clientFirstName String
@@ -49,7 +61,7 @@ model Client {
   clientCpf       String
   clientPhone     String
   address_id      String
-  Address         Address      @relation(fields: [address_id], references: [id])
+  Address         Address @relation(fields: [address_id], references: [id])
   Order           Order[]
   role            ROLE
 }
@@ -69,29 +81,29 @@ model Product {
   id           String       @id @unique @default(uuid())
   name         String
   size         String
-  stock_status STOCK_STATUS
   category_id  String
   league_id    String
+  Images       Image[]
+  OrderItems   OrderItem[]
+  stock_status STOCK_STATUS
   Category     Category     @relation(fields: [category_id], references: [id])
   League       League       @relation(fields: [league_id], references: [id])
-  OrderItems   OrderItem[]
-  Images       Image[]
 }
 
 model Coupon {
   id            String        @id @unique @default(uuid())
   code          String
-  discount_type DISCOUNT_TYPE
   OrderItems    OrderItem[]
+  discount_type DISCOUNT_TYPE
 }
 
 model Image {
-  id         String   @id @unique @default(uuid())
+  id         String  @id @unique @default(uuid())
   url        String
   key        String
   is_Cover   Boolean
   product_id String
-  Product    Product  @relation(fields: [product_id], references: [id])
+  Product    Product @relation(fields: [product_id], references: [id])
 }
 
 model Category {
