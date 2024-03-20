@@ -18,7 +18,7 @@ model Order {
   address_id   String
   Address      Address      @relation(fields: [address_id], references: [id])
   client_id    String
-  User         User       @relation(fields: [client_id], references: [id])
+  Client       Client       @relation(fields: [client_id], references: [id])
 }
 
 model Address {
@@ -34,6 +34,13 @@ model Address {
 }
 
 model User {
+  id       Int      @id @unique @default(autoincrement())
+  email    String   @unique
+  password String
+  role     ROLE
+}
+
+model Client {
   id              String  @id @unique @default(uuid())
   clientFirstName String
   clientLastName  String
