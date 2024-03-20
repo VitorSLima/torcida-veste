@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id           String       @id @unique @default(uuid())
+  payment_id   String
+  payment_url  String
+  order_status ORDER_STATUS
+  created_at   DateTime
+  updated_at   DateTime
+  OrderItems   OrderItem[]
+  address_id   String
+  Address      Address      @relation(fields: [address_id], references: [id])
+  client_id    String
+  Client       Client       @relation(fields: [client_id], references: [id])
+}
+
+model Address {
+  id                 String  @id @unique @default(uuid())
+  clientZipCode      String
+  clientAddress      String
+  clientNumber       String
+  clientComplement   String?
+  clientNeighborhood String?
+  clientCity         String
+  clientState        String
+  Order              Order[]
+}
+
+model Client {
+  id              String  @id @unique @default(uuid())
+  clientFirstName String
+  clientLastName  String
+  clientEmail     String
+  clientCpf       String
+  clientPhone     String
+  Order           Order[]
+}
+
+model OrderItem {
+  id         String  @id @unique @default(uuid())
+  product_id String
+  order_id   String
+  coupon     String
+  quantity   Float
+  Product    Product @relation(fields: [product_id], references: [id])
+  Order      Order   @relation(fields: [order_id], references: [id])
+  Coupon     Coupon  @relation(fields: [coupon], references: [id])
+}
+
+model Product {
+  id           String       @id @unique @default(uuid())
+  name         String
+  size         String
+  stock_status STOCK_STATUS
+  category_id  String
+  league_id    String
+  Category     Category     @relation(fields: [category_id], references: [id])
+  League       League       @relation(fields: [league_id], references: [id])
+  OrderItems   OrderItem[]
+  Images       Image[]
+}
+
+model Coupon {
+  id            String        @id @unique @default(uuid())
+  code          String
+  discount_type DISCOUNT_TYPE
+  OrderItems    OrderItem[]
+}
+
+model Image {
+  id         String   @id @unique @default(uuid())
+  product_id String
+  body       String
+  user_id    Int
+  status     String
+  created_at DateTime
+  Product    Product  @relation(fields: [product_id], references: [id])
+}
+
+model Category {
+  id       String    @id @unique @default(uuid())
+  name     String
+  Products Product[]
+}
+
+model League {
+  id       String    @id @unique @default(uuid())
+  name     String
+  Products Product[]
+}
+
+enum ORDER_STATUS {
+  RECEBIDO
+  EM_PROCESSAMENTO
+  ENVIADO
+  CONCLUIDO
+  CANCELADO
+}
+
+enum DISCOUNT_TYPE {
+  PERCENTAGE
+  VALUE
+}
+
+enum SHIPMENT_TYPE {
+  ENTREGA
+  RETIRADA
+}
+
+enum STOCK_STATUS {
+  IN_STOCK
+  OUT_OF_STOCK
+}
