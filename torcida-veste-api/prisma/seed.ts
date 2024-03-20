@@ -1,14 +1,16 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+
 async function main() {
+  const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
   try {
-    // Create an administrative user
     await prisma.user.create({
       data: {
-        email: 'admin@torcidaveste.com.br',
-        password: 'T0rc!d@V3$t3',
+        email: process.env.ADMIN_EMAIL,
+        password: hashedPassword,
         role: 'ADMIN',
       },
     });
