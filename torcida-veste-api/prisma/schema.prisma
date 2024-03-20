@@ -58,11 +58,11 @@ model OrderItem {
   id         String  @id @unique @default(uuid())
   product_id String
   order_id   String
-  coupon     String
+  coupon_id  String
   quantity   Float
   Product    Product @relation(fields: [product_id], references: [id])
   Order      Order   @relation(fields: [order_id], references: [id])
-  Coupon     Coupon  @relation(fields: [coupon], references: [id])
+  Coupon     Coupon  @relation(fields: [coupon_id], references: [id])
 }
 
 model Product {
@@ -87,11 +87,10 @@ model Coupon {
 
 model Image {
   id         String   @id @unique @default(uuid())
+  url        String
+  key        String
+  is_Cover   Boolean
   product_id String
-  body       String
-  user_id    Int
-  status     String
-  created_at DateTime
   Product    Product  @relation(fields: [product_id], references: [id])
 }
 
@@ -113,11 +112,11 @@ enum ROLE {
 }
 
 enum ORDER_STATUS {
-  RECEBIDO
-  EM_PROCESSAMENTO
-  ENVIADO
-  CONCLUIDO
-  CANCELADO
+  RECEIVED
+  PROCESSING
+  SENT
+  CONCLUDED
+  CANCELED
 }
 
 enum DISCOUNT_TYPE {
@@ -126,8 +125,8 @@ enum DISCOUNT_TYPE {
 }
 
 enum SHIPMENT_TYPE {
-  ENTREGA
-  RETIRADA
+  DELIVERY
+  REMOVAL
 }
 
 enum STOCK_STATUS {
