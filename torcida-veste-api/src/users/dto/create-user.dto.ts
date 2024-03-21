@@ -18,8 +18,19 @@ export class CreateUserDTO {
   @IsString()
   password?: string;
 
+  @IsOptional()
   @IsEnum(Role)
-  role: string;
+  role?: Role;
+
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsOptional()
+  @IsString()
+  picture?: string;
 }
-
-
