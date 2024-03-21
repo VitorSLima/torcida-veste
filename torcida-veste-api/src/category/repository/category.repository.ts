@@ -29,6 +29,21 @@ export class CategoriesRepository {
     }
   }
 
+  async findOneCategory(id: string) {
+    try {
+      const category = await this.prisma.category.findFirst({
+        where: {
+          id: {
+            equals: id,
+          }
+        },
+      });
+      return category;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async findCategoryById(id: string) {
     try {
       const category = await this.prisma.category.findFirst({

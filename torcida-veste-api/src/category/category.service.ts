@@ -5,12 +5,14 @@ import { CreateCategoryUseCase } from './use-cases/create-category.use-case';
 import { DeleteCategoryUseCase } from './use-cases/delete-category.use-case';
 import { UpdateCategoryUseCase } from './use-cases/update-category.use-case';
 import { FindAllCategoriesUseCase } from './use-cases/find-all-categories.use-case';
+import { FindOneCategoryUseCase } from './use-cases';
 
 
 @Injectable()
 export class CategoryService {
   constructor(
     private readonly findAllCategoryUseCase: FindAllCategoriesUseCase,
+    private readonly findOneCategoryUseCase: FindOneCategoryUseCase,
     private readonly updateCategoryUseCase: UpdateCategoryUseCase,
     private readonly deleteCategoryUseCase: DeleteCategoryUseCase,
     private readonly createCategoryUseCase: CreateCategoryUseCase,
@@ -22,6 +24,10 @@ export class CategoryService {
 
   async findAllCategories() {
     return await this.findAllCategoryUseCase.execute();
+  }
+
+    async findOneCategory(id: string) {
+    return await this.findOneCategoryUseCase.execute(id);
   }
 
   async updateCategory(id: string, data: UpdateCategoryInput) {
