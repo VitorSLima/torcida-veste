@@ -31,13 +31,19 @@ export class CategoryController {
   findAll() {
     return this.categoryService.findAllCategories();
   }
+  @Get(':id')
+  findOne(id: string) {
+    return this.categoryService.findOneCategory(id);
+  }
   @Patch(':id')
-  @UseGuards()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   update(@Param('id') id: string, @Body() data: UpdateCategoryInput) {
     return this.categoryService.updateCategory(id, data);
   }
   @Delete(':id')
-  @UseGuards()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   delete(@Param('id') id: string) {
     return this.categoryService.deleteCategory(id);
   }
