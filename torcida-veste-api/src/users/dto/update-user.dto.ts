@@ -13,13 +13,25 @@ export class UpdateUserDTO {
 
   @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @IsOptional()
   @IsString()
   password?: string;
-  
+
   @IsOptional()
   @IsEnum(Role)
-  role: string;
+  role?: Role;
+
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  @IsString()
+  picture?: string;
 }
