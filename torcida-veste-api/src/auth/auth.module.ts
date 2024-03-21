@@ -10,6 +10,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtWebStrategy } from './strategies/jwt-web.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { JwtWebStrategy } from './strategies/jwt-web.strategy';
     JwtWebStrategy,
     JwtRefreshTokenStrategy,
     LocalStrategy,
+    GoogleStrategy,
     Logger,
   ],
   exports: [AuthService],
