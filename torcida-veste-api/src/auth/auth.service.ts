@@ -107,7 +107,7 @@ export class AuthService {
       throw error;
     }
 
-    const userRole = 'admin';
+    const userRole = 'ADMIN';
 
     const newToken = await this.jwtService.sign({
       sub: user.id,
