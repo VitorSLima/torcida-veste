@@ -33,8 +33,8 @@ model Order {
   id           String       @id @unique @default(uuid())
   payment_id   String
   payment_url  String
-  created_at   DateTime
-  updated_at   DateTime
+  created_at   String
+  updated_at   String
   address_id   String
   client_id    String
   coupon_id    String
@@ -96,7 +96,7 @@ model Product {
 model Coupon {
   id            String        @id @unique @default(uuid())
   code          String
-  expiration_at DateTime
+  expiration_at String
   value         Float?
   Order         Order[]
   discount_type DISCOUNT_TYPE
