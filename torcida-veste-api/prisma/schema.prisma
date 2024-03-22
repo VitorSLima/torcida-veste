@@ -37,10 +37,12 @@ model Order {
   updated_at   DateTime
   address_id   String
   client_id    String
+  coupon_id    String
   order_status ORDER_STATUS
   OrderItems   OrderItem[]
   Address      Address      @relation(fields: [address_id], references: [id])
   Client       Client       @relation(fields: [client_id], references: [id])
+  Coupon       Coupon  @relation(fields: [coupon_id], references: [id])
 }
 
 model Address {
@@ -73,11 +75,9 @@ model OrderItem {
   id         String  @id @unique @default(uuid())
   product_id String
   order_id   String
-  coupon_id  String
   quantity   Float
   Product    Product @relation(fields: [product_id], references: [id])
   Order      Order   @relation(fields: [order_id], references: [id])
-  Coupon     Coupon  @relation(fields: [coupon_id], references: [id])
 }
 
 model Product {
@@ -96,7 +96,9 @@ model Product {
 model Coupon {
   id            String        @id @unique @default(uuid())
   code          String
-  OrderItems    OrderItem[]
+  expiration_at DateTime
+  value         Float?
+  Order         Order[]
   discount_type DISCOUNT_TYPE
 }
 
