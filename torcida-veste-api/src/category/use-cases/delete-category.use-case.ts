@@ -15,17 +15,17 @@ export class DeleteCategoryUseCase {
       this.logger.error(error.message);
       throw error;
     }
-
     try {
-      this.categoriesRepository.deleteCategory(id);
-      this.logger.log('Category deleted', DeleteCategoryUseCase.name);
+        this.categoriesRepository.deleteCategory(id);
+        this.logger.log('Category deleted', DeleteCategoryUseCase.name);
     } catch (err) {
-      const error = new NotFoundException('Something bad happened', {
-        cause: err,
-        description: 'Error on deleting category',
-      });
-      this.logger.error(error.message);
-      throw error;
+        const error = new NotFoundException('Something bad happened', {
+            cause: err,
+            description: 'Error on deleting category',
+        });
+        this.logger.error(error.message);
+        throw error;
     }
+    return category;
   }
 }
