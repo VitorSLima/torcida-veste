@@ -1,0 +1,28 @@
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { CreateProductInput } from '../input/create-product.input';
+import { ProductsRepository } from '../repository/product.repository';
+
+@Injectable()
+export class CreateProductUseCase {
+    constructor(
+        private readonly productsRepository: ProductsRepository,
+        private readonly logger: Logger = new Logger(),
+    ) {}
+
+    async execute(data: CreateProductInput) {
+        try {
+            const product = await this.productsRepository.createProduct({
+                ...data,
+            });
+            if (!product) {
+                const error = new BadRequestException('Error creating product');
+                throw error;
+            }
+            this.logger.log('Product created', CreateProductUseCase.name);
+            return product;
+        } catch (err) {
+            this.logger.error(err.message);
+            throw err;
+        }
+    }
+}
