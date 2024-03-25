@@ -84,11 +84,14 @@ model Product {
   id           String       @id @unique @default(uuid())
   name         String
   size         String
+  description  String
+  price        Float
+  pricePromo   Float?
+  stock_status STOCK_STATUS
   category_id  String
   league_id    String
   Images       Image[]
   OrderItems   OrderItem[]
-  stock_status STOCK_STATUS
   Category     Category     @relation(fields: [category_id], references: [id])
   League       League       @relation(fields: [league_id], references: [id])
 }
