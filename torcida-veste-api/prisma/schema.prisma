@@ -7,93 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Session {
-  id            String   @id
-  refresh_token String
-  expires_at    DateTime
-  user_id       String
-  User          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@map("sessions")
-}
-
-model User {
-  id       String    @id @unique @default(uuid())
-  password String?
-  role     ROLE?
-  sessions Session[]
-  email    String    @unique
-  firstName String
-  lastName  String
-  picture   String?
-}
-
-model Order {
-  id           String       @id @unique @default(uuid())
-  payment_id   String
-  payment_url  String
-  created_at   String
-  updated_at   String
-  address_id   String
-  client_id    String
-  coupon_id    String
-  order_status ORDER_STATUS
-  OrderItems   OrderItem[]
-  Address      Address      @relation(fields: [address_id], references: [id])
-  Client       Client       @relation(fields: [client_id], references: [id])
-  Coupon       Coupon  @relation(fields: [coupon_id], references: [id])
-}
-
 model Address {
-  id                 String   @id @unique @default(uuid())
-  clientZipCode      String
-  clientAddress      String
-  clientNumber       String
-  clientComplement   String?
-  clientNeighborhood String?
-  clientCity         String
-  clientState        String
-  Order              Order[]
-  Client             Client[]
+  id           String   @id @unique @default(uuid())
+  zipCode      String
+  street       String
+  number       String
+  complement   String?
+  neighborhood String?
+  city         String
+  state        String
+  Order        Order[]
+  Person       Person[]
 }
 
-model Client {
-  id              String  @id @unique @default(uuid())
-  clientFirstName String
-  clientLastName  String
-  clientEmail     String
-  clientCpf       String
-  clientPhone     String
-  address_id      String
-  Address         Address @relation(fields: [address_id], references: [id])
-  Order           Order[]
-  role            ROLE
-}
-
-model OrderItem {
-  id         String  @id @unique @default(uuid())
-  product_id String
-  order_id   String
-  quantity   Float
-  Product    Product @relation(fields: [product_id], references: [id])
-  Order      Order   @relation(fields: [order_id], references: [id])
-}
-
-model Product {
-  id           String       @id @unique @default(uuid())
-  name         String
-  size         String
-  description  String
-  price        Float
-  pricePromo   Float?
-  stock_status STOCK_STATUS
-  category_id  String
-  league_id    String
-  Images       Image[]
-  OrderItems   OrderItem[]
-  Category     Category     @relation(fields: [category_id], references: [id])
-  League       League       @relation(fields: [league_id], references: [id])
+model Category {
+  id       String    @id @unique @default(uuid())
+  name     String
+  Products Product[]
 }
 
 model Coupon {
@@ -114,21 +44,90 @@ model Image {
   Product    Product @relation(fields: [product_id], references: [id])
 }
 
-model Category {
-  id       String    @id @unique @default(uuid())
-  name     String
-  Products Product[]
-}
-
 model League {
   id       String    @id @unique @default(uuid())
   name     String
   Products Product[]
 }
 
+model Order {
+  id           String       @id @unique @default(uuid())
+  payment_id   String
+  payment_url  String
+  created_at   String
+  updated_at   String
+  address_id   String
+  person_id    String
+  coupon_id    String
+  order_status ORDER_STATUS
+  OrderItems   OrderItem[]
+  Address      Address      @relation(fields: [address_id], references: [id])
+  Person       Person       @relation(fields: [person_id], references: [id])
+  Coupon       Coupon       @relation(fields: [coupon_id], references: [id])
+}
+
+model OrderItem {
+  id         String  @id @unique @default(uuid())
+  product_id String
+  order_id   String
+  quantity   Float
+  Product    Product @relation(fields: [product_id], references: [id])
+  Order      Order   @relation(fields: [order_id], references: [id])
+}
+
+model Person {
+  id         String  @id @unique @default(uuid())
+  document   String
+  phone      String
+  address_id String
+  user_id    String  @unique
+  User       User    @relation(fields: [user_id], references: [id])
+  Address    Address @relation(fields: [address_id], references: [id])
+  Order      Order[]
+}
+
+model Product {
+  id           String       @id @unique @default(uuid())
+  name         String
+  size         String
+  description  String
+  price        Float
+  pricePromo   Float?
+  stock_status STOCK_STATUS
+  category_id  String
+  league_id    String
+  Images       Image[]
+  OrderItems   OrderItem[]
+  Category     Category     @relation(fields: [category_id], references: [id])
+  League       League       @relation(fields: [league_id], references: [id])
+}
+
+model Session {
+  id            String   @id
+  refresh_token String
+  expires_at    DateTime
+  user_id       String
+  User          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("sessions")
+}
+
+model User {
+  id        String    @id @unique @default(uuid())
+  email     String    @unique
+  password  String?
+  firstName String
+  lastName  String
+  picture   String?
+  sessions  Session[]
+  role      ROLE?
+  Person    Person?
+}
+
 enum ROLE {
   ADMIN
-  CLIENT
+  USER
 }
 
 enum ORDER_STATUS {
