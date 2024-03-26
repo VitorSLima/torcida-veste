@@ -9,7 +9,7 @@ export class DeleteProductUseCase {
     ) {}
 
     async execute(id: string) {
-        const product = this.productsRepository.deleteProduct(id);
+        const product = this.productsRepository.findProductsById(id);
         if (!product) {
             const error = new NotFoundException('Product not found');
             this.logger.error(error.message);
@@ -19,6 +19,7 @@ export class DeleteProductUseCase {
         try {
             this.productsRepository.deleteProduct(id);
             this.logger.log('Product deleted', DeleteProductUseCase.name);
+            return product;
         } catch (err) {
             const error = new NotFoundException('Something bad happened', {
                 cause: err,
