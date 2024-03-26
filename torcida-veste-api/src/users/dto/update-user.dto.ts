@@ -2,7 +2,7 @@ import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 
 enum Role {
     ADMIN = 'ADMIN',
-    CLIENT = 'CLIENT',
+    USER = 'USER',
 }
 
 export class UpdateUserDTO {

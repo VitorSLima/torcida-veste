@@ -2,7 +2,7 @@ import { IsOptional, IsString, IsEmail, IsNotEmpty, IsEnum } from 'class-validat
 
 enum Role {
     ADMIN = 'ADMIN',
-    CLIENT = 'CLIENT',
+    USER = 'USER',
 }
 
 export class CreateUserDTO {
