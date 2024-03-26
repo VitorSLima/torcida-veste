@@ -19,6 +19,7 @@ export class DeleteLeagueUseCase {
     try {
       this.leaguesRepository.deleteLeague(id);
       this.logger.log('League deleted', DeleteLeagueUseCase.name);
+      return league;
     } catch (err) {
       const error = new NotFoundException('Something bad happened', {
         cause: err,
