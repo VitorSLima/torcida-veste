@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Address {
-  id           String   @id @unique @default(uuid())
+  id           String  @id @unique @default(uuid())
   zipCode      String
   street       String
   number       String
@@ -16,8 +16,7 @@ model Address {
   neighborhood String?
   city         String
   state        String
-  Order        Order[]
-  Person       Person[]
+  User         User[]
 }
 
 model Category {
@@ -56,13 +55,10 @@ model Order {
   payment_url  String
   created_at   String
   updated_at   String
-  address_id   String
   person_id    String
-  coupon_id    String
   order_status ORDER_STATUS
   OrderItems   OrderItem[]
-  Address      Address      @relation(fields: [address_id], references: [id])
-  Person       Person       @relation(fields: [person_id], references: [id])
+  coupon_id    String
   Coupon       Coupon       @relation(fields: [coupon_id], references: [id])
 }
 
@@ -75,24 +71,12 @@ model OrderItem {
   Order      Order   @relation(fields: [order_id], references: [id])
 }
 
-model Person {
-  id         String  @id @unique @default(uuid())
-  document   String
-  phone      String
-  address_id String
-  user_id    String  @unique
-  User       User    @relation(fields: [user_id], references: [id])
-  Address    Address @relation(fields: [address_id], references: [id])
-  Order      Order[]
-}
-
 model Product {
   id           String       @id @unique @default(uuid())
   name         String
   size         String
   description  String
   price        Float
-  pricePromo   Float?
   stock_status STOCK_STATUS
   category_id  String
   league_id    String
@@ -114,15 +98,18 @@ model Session {
 }
 
 model User {
-  id        String    @id @unique @default(uuid())
-  email     String    @unique
-  password  String?
-  firstName String
-  lastName  String
-  picture   String?
-  sessions  Session[]
-  role      ROLE?
-  Person    Person?
+  id         String    @id @unique @default(uuid())
+  email      String    @unique
+  password   String?
+  firstName  String
+  lastName   String
+  picture    String?
+  document   String
+  phone      String
+  address_id String
+  role       ROLE?
+  sessions   Session[]
+  Address    Address   @relation(fields: [address_id], references: [id])
 }
 
 enum ROLE {
