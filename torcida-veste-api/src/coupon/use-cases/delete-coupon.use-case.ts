@@ -19,6 +19,7 @@ export class DeleteCouponUseCase {
     try {
       this.couponsRepository.deleteCoupon(id);
       this.logger.log('Coupon deleted', DeleteCouponUseCase.name);
+      return coupon;
     } catch (err) {
       const error = new NotFoundException('Something bad happened', {
         cause: err,

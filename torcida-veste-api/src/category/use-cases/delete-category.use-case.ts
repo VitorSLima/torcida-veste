@@ -18,6 +18,7 @@ export class DeleteCategoryUseCase {
     try {
         this.categoriesRepository.deleteCategory(id);
         this.logger.log('Category deleted', DeleteCategoryUseCase.name);
+        return category;
     } catch (err) {
         const error = new NotFoundException('Something bad happened', {
             cause: err,

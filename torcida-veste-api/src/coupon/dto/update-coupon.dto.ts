@@ -4,7 +4,7 @@ import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 export class UpdateCouponDto {
   @IsString()
   @IsOptional()
-  code: string;
+  code?: string;
 
   @IsEnum(DISCOUNT_TYPE)
   @IsOptional()

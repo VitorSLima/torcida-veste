@@ -2,36 +2,43 @@ import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 
 enum Role {
     ADMIN = 'ADMIN',
-    CLIENT = 'CLIENT',
+    USER = 'USER',
 }
 
 export class UpdateUserDTO {
+    @IsOptional()
+    @IsString()
+    id?: string;
 
-  @IsOptional()
-  @IsString()
-  id?: string;
+    @IsOptional()
+    @IsEmail()
+    email?: string;
 
-  @IsOptional()
-  @IsEmail()
-  email?: string;
+    @IsOptional()
+    @IsString()
+    password?: string;
 
-  @IsOptional()
-  @IsString()
-  password?: string;
+    @IsOptional()
+    @IsString()
+    firstName?: string;
 
-  @IsOptional()
-  @IsEnum(Role)
-  role?: Role;
+    @IsOptional()
+    @IsString()
+    lastName?: string;
 
-  @IsOptional()
-  @IsString()
-  firstName?: string;
+    @IsOptional()
+    @IsString()
+    picture?: string;
 
-  @IsOptional()
-  @IsString()
-  lastName?: string;
+    @IsOptional()
+    @IsString()
+    document?: string;
 
-  @IsOptional()
-  @IsString()
-  picture?: string;
+    @IsOptional()
+    @IsString()
+    phone?: string;
+
+    @IsOptional()
+    @IsEnum(Role)
+    role?: Role;
 }

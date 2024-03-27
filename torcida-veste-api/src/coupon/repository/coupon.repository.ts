@@ -11,7 +11,6 @@ export class CouponsRepository {
     try {
         const coupon = await this.prisma.coupon.create({
             data: {
-                    ...data,
                     code: data.code,
                     value: data.value,
                     discount_type: data.discount_type,

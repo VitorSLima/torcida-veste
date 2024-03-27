@@ -7,10 +7,19 @@ import { CouponModule } from './coupon/coupon.module';
 import { LeagueModule } from './league/league.module';
 import { SharedModule } from './shared/shared.module';
 import { UsersModule } from './users/users.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
-  imports: [AuthModule, CategoryModule, CouponModule, LeagueModule, SharedModule, UsersModule],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        AuthModule,
+        CategoryModule,
+        CouponModule,
+        LeagueModule,
+        ProductModule,
+        SharedModule,
+        UsersModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}
