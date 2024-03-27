@@ -18,10 +18,6 @@ export class CreateProductDto {
     @IsOptional()
     price?: number;
 
-    @IsNumber()
-    @IsOptional()
-    pricePromo?: number;
-
     @IsEnum(STOCK_STATUS)
     @IsOptional()
     stockStatus?: STOCK_STATUS;
