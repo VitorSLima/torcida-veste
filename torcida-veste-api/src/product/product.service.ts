@@ -6,7 +6,6 @@ import {
     FindProductByCategoryUseCase,
     FindProductByIdUseCase,
     FindProductByLeagueUseCase,
-    FindProductByPricePromoUseCase,
     UpdateProductUseCase,
 } from './use-cases';
 import { CreateProductInput } from './input/create-product.input';
@@ -23,7 +22,6 @@ export class ProductService {
         private readonly findAllProductsUseCase: FindAllProductsUseCase,
         private readonly findProductByLeagueUseCase: FindProductByLeagueUseCase,
         private readonly findProductByCategoryUseCase: FindProductByCategoryUseCase,
-        private readonly findProductByPricePromoUseCase: FindProductByPricePromoUseCase,
     ) {}
 
     async createProduct(data: CreateProductInput) {
@@ -40,10 +38,6 @@ export class ProductService {
 
     async findProductsByCategory(data: string) {
         return await this.findProductByCategoryUseCase.execute(data);
-    }
-
-    async findProductsByPricePromo() {
-        return await this.findProductByPricePromoUseCase.execute();
     }
 
     async findAllProducts(paginationParams: PaginationParams) {
