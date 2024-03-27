@@ -6,31 +6,38 @@ enum Role {
 }
 
 export class CreateUserDTO {
-  @IsOptional()
-  @IsString()
-  id?: string;
+    @IsOptional()
+    @IsString()
+    id?: string;
 
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
 
-  @IsOptional()
-  @IsString()
-  password?: string;
+    @IsOptional()
+    @IsString()
+    password?: string;
 
-  @IsOptional()
-  @IsEnum(Role)
-  role?: Role;
+    @IsNotEmpty()
+    @IsString()
+    firstName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  firstName: string;
+    @IsNotEmpty()
+    @IsString()
+    lastName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
+    @IsOptional()
+    @IsString()
+    picture?: string;
 
-  @IsOptional()
-  @IsString()
-  picture?: string;
+    @IsOptional()
+    @IsString()
+    document?: string;
+
+    @IsOptional()
+    @IsString()
+    phone?: string;
+
+    @IsEnum(Role)
+    role: Role;
 }
