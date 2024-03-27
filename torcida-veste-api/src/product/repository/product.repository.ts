@@ -16,7 +16,6 @@ export class ProductsRepository {
                     size: data.size,
                     description: data.description,
                     price: Number(data.price),
-                    pricePromo: Number(data.pricePromo),
                     stock_status: data.stock_status,
                     category_id: data.category_id,
                     league_id: data.league_id,
@@ -34,6 +33,24 @@ export class ProductsRepository {
                 where: {
                     category_id,
                 },
+                select: {
+                    id: true,
+                    name: true,
+                    size: true,
+                    description: true,
+                    price: true,
+                    stock_status: true,
+                    Category: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    League: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
             });
             return products;
         } catch (error) {
@@ -47,19 +64,22 @@ export class ProductsRepository {
                 where: {
                     league_id,
                 },
-            });
-            return products;
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    async findProductsInPricePromo() {
-        try {
-            const products = this.prisma.product.findMany({
-                where: {
-                    pricePromo: {
-                        not: null,
+                select: {
+                    id: true,
+                    name: true,
+                    size: true,
+                    description: true,
+                    price: true,
+                    stock_status: true,
+                    Category: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    League: {
+                        select: {
+                            name: true,
+                        },
                     },
                 },
             });
@@ -75,6 +95,24 @@ export class ProductsRepository {
                 where: {
                     id,
                 },
+                select: {
+                    id: true,
+                    name: true,
+                    size: true,
+                    description: true,
+                    price: true,
+                    stock_status: true,
+                    Category: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    League: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
             });
             return product;
         } catch (error) {
@@ -86,6 +124,24 @@ export class ProductsRepository {
         // const { page, limit } = paginationParams;
         try {
             const products = this.prisma.product.findMany({
+                select: {
+                    id: true,
+                    name: true,
+                    size: true,
+                    description: true,
+                    price: true,
+                    stock_status: true,
+                    Category: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    League: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
                 // skip: (page - 1) * limit,
                 // take: Number(limit),
             });
@@ -93,7 +149,6 @@ export class ProductsRepository {
             // const totalPages = Math.ceil(
             //     (await this.prisma.product.count()) / Number(limit),
             // );
-
 
             // return { info: { totalPages, page, limit }, products };
             return products;
@@ -113,7 +168,6 @@ export class ProductsRepository {
                     size: data.size,
                     description: data.description,
                     price: data.price,
-                    pricePromo: data.pricePromo,
                     stock_status: data.stock_status,
                     category_id: data.category_id,
                     league_id: data.league_id,
