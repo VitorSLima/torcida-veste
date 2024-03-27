@@ -7,34 +7,40 @@ import {
   UpdateUserUseCase,
 } from './use-cases';
 import { Prisma } from '@prisma/client';
+import { FindAllUsersUseCase } from './use-cases/find-all-users.use-case';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private readonly findUserByIdUseCase: FindUserByIdUseCase,
-    private readonly findUserByEmailUseCase: FindUserByEmailUseCase,
-    private readonly createUserUseCase: CreateUserUseCase,
-    private readonly updateUserUseCase: UpdateUserUseCase,
-    private readonly deleteUserUseCase: DeleteUserUseCase,
-  ) {}
+    constructor(
+        private readonly findUserByIdUseCase: FindUserByIdUseCase,
+        private readonly findUserByEmailUseCase: FindUserByEmailUseCase,
+        private readonly findAllUsersUseCase: FindAllUsersUseCase,
+        private readonly createUserUseCase: CreateUserUseCase,
+        private readonly updateUserUseCase: UpdateUserUseCase,
+        private readonly deleteUserUseCase: DeleteUserUseCase,
+    ) {}
 
-  async findUserById(id: string) {
-    return await this.findUserByIdUseCase.execute(id);
-  }
+    async findUserById(id: string) {
+        return await this.findUserByIdUseCase.execute(id);
+    }
 
-  async findUserByEmail(email: string) {
-    return await this.findUserByEmailUseCase.execute(email);
-  }
+    async findUserByEmail(email: string) {
+        return await this.findUserByEmailUseCase.execute(email);
+    }
 
-  async createUser(data: Prisma.UserCreateInput) {
-    return await this.createUserUseCase.execute(data);
-  }
+    async findAllUsers() {
+        return await this.findAllUsersUseCase.execute();
+    }
 
-  async updateUser(id: string, data: Prisma.UserUpdateInput) {
-    return await this.updateUserUseCase.execute(id, data);
-  }
+    async createUser(data: Prisma.UserCreateInput) {
+        return await this.createUserUseCase.execute(data);
+    }
 
-  async deleteUser(id: string) {
-    return await this.deleteUserUseCase.execute(id);
-  }
+    async updateUser(id: string, data: Prisma.UserUpdateInput) {
+        return await this.updateUserUseCase.execute(id, data);
+    }
+
+    async deleteUser(id: string) {
+        return await this.deleteUserUseCase.execute(id);
+    }
 }
