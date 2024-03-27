@@ -33,11 +33,6 @@ export class ProductController {
         return this.productService.findAllProducts(paginationParams);
     }
 
-    @Get('price-promo')
-    findAllProductsByPricePromo() {
-        return this.productService.findProductsByPricePromo();
-    }
-
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.productService.findProductById(id);
