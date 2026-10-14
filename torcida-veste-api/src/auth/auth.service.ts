@@ -33,7 +33,7 @@ export class AuthService {
     async validateUser(email: string, password: string) {
         const user = await this.usersRepository.findUserByEmail(email);
 
-        if (!user) return null;
+        if (!user || !user.password) return null;
 
         const passwordIsCorrect = await this.encryptProvider.compare(
             user.password,
@@ -52,11 +52,9 @@ export class AuthService {
             throw new NotFoundException('User not found');
         }
 
-        const userRole = 'ADMIN';
-
         const token = await this.jwtService.sign({
             sub: user.id,
-            role: userRole,
+            role: user.role ?? 'USER',
         });
 
         const expirationDate = await this.dateHandlingProvider.addHours(
@@ -107,11 +105,17 @@ export class AuthService {
             throw error;
         }
 
-        const userRole = 'ADMIN';
+        const dbUser = await this.usersRepository.findUserById(user.id);
+
+        if (!dbUser) {
+            const error = new UnauthorizedException('User not found');
+            this.logger.error(error.message);
+            throw error;
+        }
 
         const newToken = await this.jwtService.sign({
-            sub: user.id,
-            role: userRole,
+            sub: dbUser.id,
+            role: dbUser.role ?? 'USER',
         });
 
         const newRefreshToken = this.generateHashCodeProvider.generate(40);
