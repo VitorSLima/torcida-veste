@@ -86,7 +86,7 @@ export class ProductsRepository {
             this.prisma.product.findMany({
                 where,
                 select: productSelect,
-                orderBy: { name: 'asc' },
+                orderBy: [{ name: 'asc' }, { id: 'asc' }],
                 skip: (page - 1) * limit,
                 take: limit,
             }),

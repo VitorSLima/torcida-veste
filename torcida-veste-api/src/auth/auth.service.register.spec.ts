@@ -39,4 +39,13 @@ describe('AuthService.register', () => {
         await expect(service.register(input)).rejects.toThrow(ConflictException);
         expect(usersRepository.createUser).not.toHaveBeenCalled();
     });
+
+    it('maps a unique violation on create to ConflictException', async () => {
+        const { service, usersRepository, encryptProvider } = makeAuthService();
+        usersRepository.findUserByEmail.mockResolvedValue(null);
+        encryptProvider.encrypt.mockResolvedValue('hashed');
+        usersRepository.createUser.mockRejectedValue({ code: 'P2002' });
+
+        await expect(service.register(input)).rejects.toThrow(ConflictException);
+    });
 });

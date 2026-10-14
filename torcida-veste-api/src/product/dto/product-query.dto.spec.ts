@@ -28,4 +28,16 @@ describe('ProductQueryDto', () => {
     it('rejects page 0', async () => {
         expect(await validate(parse({ page: '0' }))).not.toHaveLength(0);
     });
+
+    it('rejects an absurdly large page', async () => {
+        expect(
+            await validate(parse({ page: '100000000000000000000' })),
+        ).not.toHaveLength(0);
+    });
+
+    it('rejects a search longer than 100 chars', async () => {
+        expect(
+            await validate(parse({ search: 'a'.repeat(101) })),
+        ).not.toHaveLength(0);
+    });
 });

@@ -9,7 +9,6 @@ import { AuthRepository } from './repository/auth.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
-import { JwtWebStrategy } from './strategies/jwt-web.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
@@ -28,7 +27,6 @@ import { GoogleStrategy } from './strategies/google.strategy';
         AuthService,
         AuthRepository,
         JwtStrategy,
-        JwtWebStrategy,
         JwtRefreshTokenStrategy,
         LocalStrategy,
         GoogleStrategy,

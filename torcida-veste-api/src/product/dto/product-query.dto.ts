@@ -1,11 +1,12 @@
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
 export class ProductQueryDto {
     @IsOptional()
     @Type(() => Number)
     @IsInt()
     @Min(1)
+    @Max(10000)
     page: number = 1;
 
     @IsOptional()
@@ -17,6 +18,7 @@ export class ProductQueryDto {
 
     @IsOptional()
     @IsString()
+    @MaxLength(100)
     search?: string;
 
     @IsOptional()

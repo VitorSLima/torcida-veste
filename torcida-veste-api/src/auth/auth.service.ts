@@ -61,13 +61,21 @@ export class AuthService {
 
         const password = await this.encryptProvider.encrypt(data.password, 10);
 
-        const user = await this.usersRepository.createUser({
-            email: data.email,
-            password,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            role: 'USER',
-        });
+        let user;
+        try {
+            user = await this.usersRepository.createUser({
+                email: data.email,
+                password,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                role: 'USER',
+            });
+        } catch (err) {
+            if (err?.code === 'P2002') {
+                throw new ConflictException('Email already registered');
+            }
+            throw err;
+        }
 
         const { token, refresh_token } = await this.generateToken(user.id);
 
