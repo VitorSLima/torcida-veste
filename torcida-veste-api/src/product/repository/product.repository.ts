@@ -118,11 +118,9 @@ export class ProductsRepository {
     }
 
     async deleteProduct(id: string) {
-        try {
-            const product = this.prisma.product.delete({ where: { id } });
-            return product;
-        } catch (error) {
-            console.error(error);
-        }
+        return this.prisma.$transaction([
+            this.prisma.image.deleteMany({ where: { product_id: id } }),
+            this.prisma.product.delete({ where: { id } }),
+        ]);
     }
 }
