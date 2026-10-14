@@ -10,7 +10,7 @@ import {
 } from './use-cases';
 import { CreateProductInput } from './input/create-product.input';
 import { UpdateProductInput } from './input/update-product.input';
-import { PaginationParams } from './input/pagination-params.input';
+import { ProductQueryDto } from './dto/product-query.dto';
 
 @Injectable()
 export class ProductService {
@@ -40,8 +40,8 @@ export class ProductService {
         return await this.findProductByCategoryUseCase.execute(data);
     }
 
-    async findAllProducts(paginationParams: PaginationParams) {
-        return await this.findAllProductsUseCase.execute(paginationParams);
+    async findAllProducts(query: ProductQueryDto) {
+        return await this.findAllProductsUseCase.execute(query);
     }
 
     async updateProduct(id: string, data: UpdateProductInput) {

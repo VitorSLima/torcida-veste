@@ -15,6 +15,10 @@ export class CreateProductDto {
     @IsNumber()
     price: number;
 
+    @IsOptional()
+    @IsNumber()
+    originalPrice?: number;
+
     @IsEnum(STOCK_STATUS)
     stock_status: STOCK_STATUS;
 

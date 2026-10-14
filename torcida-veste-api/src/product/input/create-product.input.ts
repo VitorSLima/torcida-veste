@@ -5,6 +5,7 @@ export interface CreateProductInput {
     size: string;
     description?: string | null;
     price: number;
+    originalPrice?: number | null;
     stock_status: STOCK_STATUS;
     category_id: string;
     league_id: string;
