@@ -16,8 +16,9 @@ export class UpdateUserUseCase {
       this.logger.error(error.message);
       throw error;
     }
+    let updated;
     try {
-        await this.usersRepository.updateUser(id, data);
+        updated = await this.usersRepository.updateUser(id, data);
         this.logger.log('User updated', UpdateUserUseCase.name);
     } catch (err) {
         const error = new NotFoundException('Something bad happened', {
@@ -27,6 +28,6 @@ export class UpdateUserUseCase {
         this.logger.error(error.message);
         throw error;
     }
-    return user;
+    return { ...updated, password: undefined };
   }
 }
