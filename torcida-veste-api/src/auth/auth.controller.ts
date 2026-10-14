@@ -6,6 +6,7 @@ import {
     Put,
     Req,
     Request,
+    Res,
     UseGuards,
     ValidationPipe,
 } from '@nestjs/common';
@@ -16,6 +17,8 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtRefreshGuard } from './guards/jwt-refresh-token.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
+import { ExchangeCodeDto } from './dto/exchange-code.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -63,7 +66,18 @@ export class AuthController {
 
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
-    googleAuthRedirect(@Req() req) {
-        return this.authService.googleLogin(req);
+    async googleAuthRedirect(@Req() req, @Res() res: Response) {
+        const code = await this.authService.createGoogleAuthCode(req.user.id);
+        res.redirect(
+            `${process.env.FRONTEND_URL}/auth/google/callback?code=${code}`,
+        );
+    }
+
+    @Post('google/exchange')
+    async exchangeGoogleCode(
+        @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+        body: ExchangeCodeDto,
+    ) {
+        return this.authService.exchangeGoogleAuthCode(body.code);
     }
 }

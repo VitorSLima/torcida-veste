@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import {
     ConflictException,
     Injectable,
@@ -171,14 +172,46 @@ export class AuthService {
         };
     }
 
-    async googleLogin(req) {
-        if (!req.user) {
-            return 'No user from google';
+    private hashCode(code: string): string {
+        return createHash('sha256').update(code).digest('hex');
+    }
+
+    async createGoogleAuthCode(userId: string): Promise<string> {
+        const code = this.generateHashCodeProvider.generate(32);
+
+        await this.authRepository.createAuthCode({
+            code_hash: this.hashCode(code),
+            user_id: userId,
+            expires_at: this.dateHandlingProvider.addMinutes(new Date(), 1),
+        });
+
+        return code;
+    }
+
+    async exchangeGoogleAuthCode(code: string) {
+        const record = await this.authRepository.findAuthCode(this.hashCode(code));
+
+        if (!record) {
+            throw new UnauthorizedException('Invalid code');
         }
 
+        const consumed = await this.authRepository.deleteAuthCode(record.id);
+        const expired = this.dateHandlingProvider.isAfter(
+            new Date(),
+            record.expires_at,
+        );
+
+        if (!consumed || expired) {
+            throw new UnauthorizedException('Invalid code');
+        }
+
+        const user = await this.usersRepository.findUserById(record.user_id);
+        const { token, refresh_token } = await this.generateToken(record.user_id);
+
         return {
-            message: 'User information from google',
-            user: req.user,
+            user: { ...user, password: undefined },
+            token,
+            refresh_token,
         };
     }
 }

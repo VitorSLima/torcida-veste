@@ -61,4 +61,21 @@ export class AuthRepository {
             },
         });
     }
+
+    async createAuthCode(input: {
+        code_hash: string;
+        user_id: string;
+        expires_at: Date;
+    }): Promise<void> {
+        await this.prisma.authCode.create({ data: input });
+    }
+
+    async findAuthCode(code_hash: string) {
+        return this.prisma.authCode.findUnique({ where: { code_hash } });
+    }
+
+    async deleteAuthCode(id: string): Promise<boolean> {
+        const { count } = await this.prisma.authCode.deleteMany({ where: { id } });
+        return count === 1;
+    }
 }
