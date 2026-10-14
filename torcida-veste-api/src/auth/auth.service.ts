@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from './repository/auth.repository';
 import { authConfig } from './config/auth.config';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { UsersRepository } from 'src/users/repository/users.repository';
+import { UsersRepository } from '../users/repository/users.repository';
 import { EncryptProvider } from '../shared/providers/encrypt.provider';
 import { GenerateHashCodeProvider } from '../shared/providers/generate-hash-code.provider';
 import { DateHandlingProvider } from '../shared/providers/date.provider';
