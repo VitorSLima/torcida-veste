@@ -1,11 +1,15 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { validateEnv } from './config/env';
 
 async function bootstrap() {
+    const { corsOrigins } = validateEnv(process.env);
+
     const app = await NestFactory.create(AppModule);
 
     app.enableCors({
-        origin: (process.env.FRONTEND_URL ?? 'http://localhost:3001').split(','),
+        origin: corsOrigins,
         credentials: true,
     });
 
