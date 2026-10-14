@@ -56,7 +56,11 @@ export class AuthController {
 
     @UseGuards(JwtRefreshGuard)
     @Put()
-    async update(@Body() requestBody: RefreshTokenDto, @Request() req) {
+    async update(
+        @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+        requestBody: RefreshTokenDto,
+        @Request() req,
+    ) {
         return this.authService.generateRefreshToken(requestBody, req.user);
     }
 

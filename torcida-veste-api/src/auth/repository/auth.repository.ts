@@ -30,6 +30,13 @@ export class AuthRepository {
     async findRefreshToken(
         refreshTokenPayload: InputFindRefreshTokenRepository,
     ) {
+        if (
+            typeof refreshTokenPayload.refresh_token !== 'string' ||
+            refreshTokenPayload.refresh_token.length === 0
+        ) {
+            return null;
+        }
+
         const refreshToken = await this.prisma.session.findFirst({
             where: {
                 refresh_token: refreshTokenPayload.refresh_token,
