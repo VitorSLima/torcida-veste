@@ -7,11 +7,13 @@ import {
     Req,
     Request,
     UseGuards,
+    ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RegisterDto } from './dto/register.dto';
 import { JwtRefreshGuard } from './guards/jwt-refresh-token.guard';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -39,6 +41,14 @@ export class AuthController {
             token,
             refresh_token,
         };
+    }
+
+    @Post('register')
+    async register(
+        @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+        data: RegisterDto,
+    ) {
+        return this.authService.register(data);
     }
 
     @UseGuards(JwtRefreshGuard)

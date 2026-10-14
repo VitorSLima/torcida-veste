@@ -1,4 +1,5 @@
 import {
+    ConflictException,
     Injectable,
     Logger,
     NotFoundException,
@@ -43,6 +44,37 @@ export class AuthService {
         if (!passwordIsCorrect) return null;
 
         return user;
+    }
+
+    async register(data: {
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+    }) {
+        const existing = await this.usersRepository.findUserByEmail(data.email);
+
+        if (existing) {
+            throw new ConflictException('Email already registered');
+        }
+
+        const password = await this.encryptProvider.encrypt(data.password, 10);
+
+        const user = await this.usersRepository.createUser({
+            email: data.email,
+            password,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            role: 'USER',
+        });
+
+        const { token, refresh_token } = await this.generateToken(user.id);
+
+        return {
+            user: { ...user, password: undefined },
+            token,
+            refresh_token,
+        };
     }
 
     async generateToken(id: string) {
