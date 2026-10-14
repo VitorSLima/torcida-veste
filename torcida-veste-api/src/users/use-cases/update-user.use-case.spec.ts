@@ -16,18 +16,18 @@ describe('UpdateUserUseCase', () => {
         const { sut, usersRepository } = makeSut();
         usersRepository.findUserById.mockResolvedValue({
             id: 'u1',
-            name: 'Old',
+            firstName: 'Old',
             password: 'hash',
         });
         usersRepository.updateUser.mockResolvedValue({
             id: 'u1',
-            name: 'New',
+            firstName: 'New',
             password: 'hash',
         });
 
-        const result = await sut.execute('u1', { name: 'New' });
+        const result = await sut.execute('u1', { firstName: 'New' });
 
-        expect(result.name).toBe('New');
+        expect(result.firstName).toBe('New');
         expect(result.password).toBeUndefined();
     });
 
