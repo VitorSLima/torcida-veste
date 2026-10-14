@@ -28,21 +28,25 @@ export class ProductController {
         return product;
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get()
     findAll(@Query() paginationParams: PaginationParams) {
         return this.productService.findAllProducts(paginationParams);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.productService.findProductById(id);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('league/:league_id')
     findAllProductsByLeague(@Param('league_id') id: string) {
         return this.productService.findAllProductsByLeague(id);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('category/:category_id')
     findAllCategoriesByLeague(@Param('category_id') id: string) {
         return this.productService.findProductsByCategory(id);

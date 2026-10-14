@@ -8,20 +8,20 @@ import { Logger } from '@nestjs/common';
 
 @Global()
 @Module({
-  providers: [
-    PrismaService,
-    EncryptProvider,
-    GenerateIdProvider,
-    GenerateHashCodeProvider,
-    DateHandlingProvider,
-    Logger
-  ],
-  exports: [
-    PrismaService,
-    EncryptProvider,
-    GenerateIdProvider,
-    GenerateHashCodeProvider,
-    DateHandlingProvider,
-  ],
+    providers: [
+        PrismaService,
+        EncryptProvider,
+        GenerateIdProvider,
+        GenerateHashCodeProvider,
+        DateHandlingProvider,
+        Logger,
+    ],
+    exports: [
+        PrismaService,
+        EncryptProvider,
+        GenerateIdProvider,
+        GenerateHashCodeProvider,
+        DateHandlingProvider,
+    ],
 })
-export class SharedModule { }
+export class SharedModule {}

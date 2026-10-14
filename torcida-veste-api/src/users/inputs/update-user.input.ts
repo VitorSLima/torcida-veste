@@ -6,5 +6,4 @@ export interface UpdateUserInput {
     picture?: string | null;
     document?: string | null;
     phone?: string | null;
-
 }

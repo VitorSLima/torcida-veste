@@ -7,34 +7,33 @@ import { UpdateCategoryUseCase } from './use-cases/update-category.use-case';
 import { FindAllCategoriesUseCase } from './use-cases/find-all-categories.use-case';
 import { FindOneCategoryUseCase } from './use-cases';
 
-
 @Injectable()
 export class CategoryService {
-  constructor(
-    private readonly findAllCategoryUseCase: FindAllCategoriesUseCase,
-    private readonly findOneCategoryUseCase: FindOneCategoryUseCase,
-    private readonly updateCategoryUseCase: UpdateCategoryUseCase,
-    private readonly deleteCategoryUseCase: DeleteCategoryUseCase,
-    private readonly createCategoryUseCase: CreateCategoryUseCase,
-  ) { }
+    constructor(
+        private readonly findAllCategoryUseCase: FindAllCategoriesUseCase,
+        private readonly findOneCategoryUseCase: FindOneCategoryUseCase,
+        private readonly updateCategoryUseCase: UpdateCategoryUseCase,
+        private readonly deleteCategoryUseCase: DeleteCategoryUseCase,
+        private readonly createCategoryUseCase: CreateCategoryUseCase,
+    ) {}
 
-  async createCategory(data: CreateCategoryInput) {
-    return await this.createCategoryUseCase.execute(data);
-  }
+    async createCategory(data: CreateCategoryInput) {
+        return await this.createCategoryUseCase.execute(data);
+    }
 
-  async findAllCategories() {
-    return await this.findAllCategoryUseCase.execute();
-  }
+    async findAllCategories() {
+        return await this.findAllCategoryUseCase.execute();
+    }
 
     async findOneCategory(id: string) {
-    return await this.findOneCategoryUseCase.execute(id);
-  }
+        return await this.findOneCategoryUseCase.execute(id);
+    }
 
-  async updateCategory(id: string, data: UpdateCategoryInput) {
-    return await this.updateCategoryUseCase.execute(id, data);
-  }
+    async updateCategory(id: string, data: UpdateCategoryInput) {
+        return await this.updateCategoryUseCase.execute(id, data);
+    }
 
-  async deleteCategory(id: string) {
-    return await this.deleteCategoryUseCase.execute(id);
-  }
+    async deleteCategory(id: string) {
+        return await this.deleteCategoryUseCase.execute(id);
+    }
 }

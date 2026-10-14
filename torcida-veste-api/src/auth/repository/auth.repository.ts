@@ -7,56 +7,58 @@ import { InputCreateRefreshTokenInput } from './inputs/create-refresh-token.inpu
 
 @Injectable()
 export class AuthRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly generateIdProvider: GenerateIdProvider,
-  ) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly generateIdProvider: GenerateIdProvider,
+    ) {}
 
-  async createRefreshToken(
-    refreshTokenPayload: InputCreateRefreshTokenInput,
-  ): Promise<void> {
-    const refreshTokenId = this.generateIdProvider.generate();
+    async createRefreshToken(
+        refreshTokenPayload: InputCreateRefreshTokenInput,
+    ): Promise<void> {
+        const refreshTokenId = this.generateIdProvider.generate();
 
-    await this.prisma.session.create({
-      data: {
-        id: refreshTokenId,
-        refresh_token: refreshTokenPayload.refresh_token,
-        expires_at: refreshTokenPayload.expires_at,
-        user_id: refreshTokenPayload.user_id,
-      },
-    });
-  }
+        await this.prisma.session.create({
+            data: {
+                id: refreshTokenId,
+                refresh_token: refreshTokenPayload.refresh_token,
+                expires_at: refreshTokenPayload.expires_at,
+                user_id: refreshTokenPayload.user_id,
+            },
+        });
+    }
 
-  async findRefreshToken(refreshTokenPayload: InputFindRefreshTokenRepository) {
-    const refreshToken = await this.prisma.session.findFirst({
-      where: {
-        refresh_token: refreshTokenPayload.refresh_token,
-        user_id: refreshTokenPayload.user_id,
-      },
-    });
+    async findRefreshToken(
+        refreshTokenPayload: InputFindRefreshTokenRepository,
+    ) {
+        const refreshToken = await this.prisma.session.findFirst({
+            where: {
+                refresh_token: refreshTokenPayload.refresh_token,
+                user_id: refreshTokenPayload.user_id,
+            },
+        });
 
-    return refreshToken;
-  }
+        return refreshToken;
+    }
 
-  async deleteRefreshToken(refreshTokenId: string): Promise<void> {
-    await this.prisma.session.delete({
-      where: {
-        id: refreshTokenId,
-      },
-    });
-  }
+    async deleteRefreshToken(refreshTokenId: string): Promise<void> {
+        await this.prisma.session.delete({
+            where: {
+                id: refreshTokenId,
+            },
+        });
+    }
 
-  async updateRefreshToken(
-    refreshTokenPayload: InputUpdateRefreshTokenRepository,
-  ) {
-    await this.prisma.session.update({
-      where: {
-        id: refreshTokenPayload.id,
-      },
-      data: {
-        refresh_token: refreshTokenPayload.refresh_token,
-        expires_at: refreshTokenPayload.expires_at,
-      },
-    });
-  }
+    async updateRefreshToken(
+        refreshTokenPayload: InputUpdateRefreshTokenRepository,
+    ) {
+        await this.prisma.session.update({
+            where: {
+                id: refreshTokenPayload.id,
+            },
+            data: {
+                refresh_token: refreshTokenPayload.refresh_token,
+                expires_at: refreshTokenPayload.expires_at,
+            },
+        });
+    }
 }

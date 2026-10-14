@@ -1,3 +1,3 @@
 export interface ValidateTokenInput {
-  token: string;
+    token: string;
 }
