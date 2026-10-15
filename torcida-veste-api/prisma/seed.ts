@@ -4,9 +4,10 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 const CATEGORIES = [
-    { id: 'seed-category-camisetas', name: 'camisetas' },
-    { id: 'seed-category-conjuntos', name: 'conjuntos' },
-    { id: 'seed-category-pro-socks', name: 'pro socks' },
+    { id: 'seed-category-primeira-linha', name: 'Primeira Linha' },
+    { id: 'seed-category-tailandesa', name: 'Tailandesa' },
+    { id: 'seed-category-conjuntos', name: 'Conjuntos' },
+    { id: 'seed-category-pro-socks', name: 'Pro Socks' },
 ];
 
 const LEAGUE = { id: 'seed-league-bundesliga', name: 'Bundesliga' };
@@ -21,11 +22,17 @@ type SeedProduct = {
     description: string;
 };
 
-const SHIRT = {
-    categoryId: 'seed-category-camisetas',
+const PRIMEIRA_LINHA = {
+    categoryId: 'seed-category-primeira-linha',
     image: '/products/bayern-shirt.png',
     description:
-        'Camisa inspirada no uniforme do Bayern de Munique. Tecido leve e respirável, ideal para torcer nos dias de jogo.',
+        'Camisa de primeira linha inspirada no uniforme do Bayern de Munique. Acabamento premium, tecido leve e respirável.',
+};
+const TAILANDESA = {
+    categoryId: 'seed-category-tailandesa',
+    image: '/products/bayern-shirt.png',
+    description:
+        'Camisa modelo tailandês, qualidade superior, inspirada no uniforme do Bayern de Munique. Ideal para torcer nos dias de jogo.',
 };
 const SET = {
     categoryId: 'seed-category-conjuntos',
@@ -41,14 +48,16 @@ const SOCKS = {
 };
 
 const PRODUCTS: SeedProduct[] = [
-    { id: 'seed-product-01', name: 'Camiseta Bayern de Munique Home 14/15', price: 69.9, originalPrice: 139.9, ...SHIRT },
-    { id: 'seed-product-02', name: 'Camiseta Bayern de Munique Away 14/15', price: 69.9, originalPrice: 139.9, ...SHIRT },
-    { id: 'seed-product-03', name: 'Camiseta Bayern de Munique Third 14/15', price: 69.9, originalPrice: 139.9, ...SHIRT },
-    { id: 'seed-product-04', name: 'Camiseta Bayern de Munique Retrô', price: 69.9, originalPrice: 139.9, ...SHIRT },
-    { id: 'seed-product-05', name: 'Camiseta Bayern de Munique Goleiro', price: 69.9, originalPrice: 139.9, ...SHIRT },
-    { id: 'seed-product-06', name: 'Camiseta Bayern de Munique Treino', price: 149.9, ...SHIRT },
-    { id: 'seed-product-07', name: 'Camiseta Bayern de Munique Torcedor', price: 149.9, ...SHIRT },
-    { id: 'seed-product-08', name: 'Camiseta Bayern de Munique Edição Especial', price: 149.9, ...SHIRT },
+    { id: 'seed-product-01', name: 'Camiseta Bayern de Munique Home 14/15', price: 69.9, originalPrice: 139.9, ...PRIMEIRA_LINHA },
+    { id: 'seed-product-02', name: 'Camiseta Bayern de Munique Away 14/15', price: 69.9, originalPrice: 139.9, ...PRIMEIRA_LINHA },
+    { id: 'seed-product-06', name: 'Camiseta Bayern de Munique Treino', price: 149.9, ...PRIMEIRA_LINHA },
+    { id: 'seed-product-07', name: 'Camiseta Bayern de Munique Torcedor', price: 149.9, ...PRIMEIRA_LINHA },
+    { id: 'seed-product-08', name: 'Camiseta Bayern de Munique Edição Especial', price: 149.9, ...PRIMEIRA_LINHA },
+    { id: 'seed-product-03', name: 'Camiseta Bayern de Munique Third 14/15', price: 69.9, originalPrice: 139.9, ...TAILANDESA },
+    { id: 'seed-product-04', name: 'Camiseta Bayern de Munique Retrô', price: 69.9, originalPrice: 139.9, ...TAILANDESA },
+    { id: 'seed-product-05', name: 'Camiseta Bayern de Munique Goleiro', price: 69.9, originalPrice: 139.9, ...TAILANDESA },
+    { id: 'seed-product-18', name: 'Camiseta Bayern de Munique Tailandesa Home', price: 149.9, ...TAILANDESA },
+    { id: 'seed-product-19', name: 'Camiseta Bayern de Munique Tailandesa Away', price: 149.9, ...TAILANDESA },
     { id: 'seed-product-09', name: 'Conjunto Bayern de Munique Treino', price: 159.9, originalPrice: 199.9, ...SET },
     { id: 'seed-product-10', name: 'Conjunto Bayern de Munique Viagem', price: 159.9, originalPrice: 199.9, ...SET },
     { id: 'seed-product-11', name: 'Conjunto Bayern de Munique Aquecimento', price: 199.9, ...SET },
@@ -59,6 +68,8 @@ const PRODUCTS: SeedProduct[] = [
     { id: 'seed-product-16', name: 'Pro Socks Vermelho', price: 39.9, ...SOCKS },
     { id: 'seed-product-17', name: 'Pro Socks Azul', price: 39.9, ...SOCKS },
 ];
+
+const IMAGES_PER_PRODUCT = 4;
 
 async function seedUsers() {
     const { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_FIRST_NAME, ADMIN_LAST_NAME } =
@@ -128,20 +139,27 @@ async function seedCatalog() {
             create: { id: product.id, ...data },
         });
 
-        const imageId = `${product.id}-cover`;
-        const imageData = {
-            url: product.image,
-            key: product.image.replace('/products/', ''),
-            is_Cover: true,
-            product_id: product.id,
-        };
+        for (let n = 1; n <= IMAGES_PER_PRODUCT; n++) {
+            const imageId = n === 1 ? `${product.id}-cover` : `${product.id}-img-${n}`;
+            const imageData = {
+                url: product.image,
+                key: product.image.replace('/products/', ''),
+                is_Cover: n === 1,
+                product_id: product.id,
+            };
 
-        await prisma.image.upsert({
-            where: { id: imageId },
-            update: imageData,
-            create: { id: imageId, ...imageData },
-        });
+            await prisma.image.upsert({
+                where: { id: imageId },
+                update: imageData,
+                create: { id: imageId, ...imageData },
+            });
+        }
     }
+
+    // Categoria da versão anterior do seed: remove só se ficou sem produtos.
+    await prisma.category.deleteMany({
+        where: { id: 'seed-category-camisetas', Products: { none: {} } },
+    });
 
     await prisma.coupon.upsert({
         where: { id: 'seed-coupon-torcida10' },
