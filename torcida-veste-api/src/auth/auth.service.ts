@@ -184,6 +184,31 @@ export class AuthService {
         return createHash('sha256').update(code).digest('hex');
     }
 
+    async resolveGoogleUser(profile: {
+        name?: { givenName?: string; familyName?: string };
+        emails?: { value: string; verified?: boolean | string }[];
+        photos?: { value: string }[];
+    }) {
+        const email = profile.emails?.[0];
+        const verified = email?.verified === true || email?.verified === 'true';
+
+        if (!email?.value || !verified) return null;
+
+        const existing = await this.usersRepository.findUserByEmail(email.value);
+
+        if (existing) {
+            return existing.password ? null : existing;
+        }
+
+        return this.usersRepository.createUser({
+            email: email.value,
+            firstName: profile.name?.givenName ?? 'Torcedor',
+            lastName: profile.name?.familyName ?? '',
+            picture: profile.photos?.[0]?.value,
+            role: 'USER',
+        });
+    }
+
     async createGoogleAuthCode(userId: string): Promise<string> {
         const code = this.generateHashCodeProvider.generate(32);
 

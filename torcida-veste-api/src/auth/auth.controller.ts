@@ -19,6 +19,7 @@ import { JwtRefreshGuard } from './guards/jwt-refresh-token.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { ExchangeCodeDto } from './dto/exchange-code.dto';
+import { GoogleCallbackGuard } from './guards/google-callback.guard';
 import { validateEnv } from '../config/env';
 
 @Controller('auth')
@@ -70,10 +71,15 @@ export class AuthController {
     async googleAuth() {}
 
     @Get('google/callback')
-    @UseGuards(AuthGuard('google'))
+    @UseGuards(GoogleCallbackGuard)
     async googleAuthRedirect(@Req() req, @Res() res: Response) {
-        const code = await this.authService.createGoogleAuthCode(req.user.id);
         const { frontendUrl } = validateEnv(process.env);
+
+        if (!req.user) {
+            return res.redirect(`${frontendUrl}/entrar?error=google_unavailable`);
+        }
+
+        const code = await this.authService.createGoogleAuthCode(req.user.id);
         res.redirect(`${frontendUrl}/auth/google/callback?code=${code}`);
     }
 
