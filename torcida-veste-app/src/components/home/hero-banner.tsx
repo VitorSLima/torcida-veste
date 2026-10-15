@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export function HeroBanner() {
     return (
-        <section className="bg-gradient-to-r from-[#1b5108] to-[#11280a]">
+        <section className="bg-gradient-to-r from-[#3dd400] to-[#1f6a05] md:from-[#1b5108] md:to-[#11280a]">
             <div className="mx-auto flex w-full max-w-[1440px] items-center justify-center gap-4 px-6 py-8 md:justify-between md:px-16 md:py-10">
                 <h1 className="hidden text-5xl font-extrabold leading-tight md:block lg:text-6xl">
                     Ofertas
