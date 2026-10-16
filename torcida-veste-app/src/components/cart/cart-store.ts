@@ -1,6 +1,6 @@
 import { CART_STORAGE_KEY, parseCart, serializeCart, type Cart } from '@/lib/cart';
 
-export const EMPTY_CART: Cart = { items: [] };
+export const EMPTY_CART: Cart = { items: [], couponCode: null };
 
 const listeners = new Set<() => void>();
 let cache: { raw: string | null; cart: Cart } = { raw: null, cart: EMPTY_CART };

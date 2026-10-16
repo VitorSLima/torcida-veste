@@ -1,10 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { addItem, cartCount, cartTotals, parseCart, removeItem, serializeCart, setQuantity, type Cart } from './cart';
+import {
+    addItem,
+    cartCount,
+    cartTotals,
+    clearCart,
+    parseCart,
+    removeItem,
+    serializeCart,
+    setCoupon,
+    setQuantity,
+    type Cart,
+} from './cart';
 import { MAX_QUANTITY } from './quantity';
 
 const shirt = { productId: 'p1', name: 'Camiseta', price: 69.9, originalPrice: 139.9, image: '/a.png' };
-const set = { productId: 'p2', name: 'Conjunto', price: 169.9, originalPrice: 199.9, image: null };
-const empty: Cart = { items: [] };
+const set = { productId: 'p2', name: 'Conjunto', price: 159.9, originalPrice: 199.9, image: null };
+const empty: Cart = { items: [], couponCode: null };
 
 describe('addItem', () => {
     it('adds a new line', () => {
@@ -50,16 +61,50 @@ describe('cartCount', () => {
 });
 
 describe('cartTotals', () => {
-    it('matches the mockup: 339,80 − 100,00 + 5,00 = 244,80', () => {
+    it('matches the seed prices: 339,80 − 110,00 + 5,00 = 234,80', () => {
         const cart = addItem(addItem(empty, shirt, 1), set, 1);
-        expect(cartTotals(cart)).toEqual({ subtotal: 339.8, savings: 100, shipping: 5, total: 244.8, itemCount: 2 });
+        expect(cartTotals(cart)).toEqual({
+            subtotal: 339.8,
+            savings: 110,
+            couponDiscount: 0,
+            discounts: 110,
+            shipping: 5,
+            total: 234.8,
+            itemCount: 2,
+        });
+    });
+    it('applies the coupon discount: 234,80 − 22,98 = 211,82', () => {
+        const cart = addItem(addItem(empty, shirt, 1), set, 1);
+        expect(cartTotals(cart, 22.98)).toMatchObject({
+            couponDiscount: 22.98,
+            discounts: 132.98,
+            shipping: 5,
+            total: 211.82,
+        });
+    });
+    it('charges shipping again when the coupon drops the goods below the threshold', () => {
+        const cart = addItem(empty, { ...shirt, price: 150, originalPrice: null }, 2);
+        expect(cartTotals(cart)).toMatchObject({ shipping: 0, total: 300 });
+        expect(cartTotals(cart, 10)).toMatchObject({ shipping: 5, total: 295 });
+    });
+    it('caps the coupon at the payable amount', () => {
+        const cart = addItem(empty, { ...shirt, price: 50, originalPrice: null }, 1);
+        expect(cartTotals(cart, 80)).toMatchObject({ couponDiscount: 50, discounts: 50, shipping: 0, total: 0 });
     });
     it('treats items without originalPrice as no discount', () => {
         const cart = addItem(empty, { ...shirt, originalPrice: null }, 2);
         expect(cartTotals(cart)).toMatchObject({ subtotal: 139.8, savings: 0 });
     });
     it('has free shipping and zero total for an empty cart', () => {
-        expect(cartTotals(empty)).toEqual({ subtotal: 0, savings: 0, shipping: 0, total: 0, itemCount: 0 });
+        expect(cartTotals(empty)).toEqual({
+            subtotal: 0,
+            savings: 0,
+            couponDiscount: 0,
+            discounts: 0,
+            shipping: 0,
+            total: 0,
+            itemCount: 0,
+        });
     });
     it('gives free shipping when the payable amount reaches the threshold', () => {
         const cart = addItem(empty, { ...shirt, price: 150, originalPrice: null }, 2);
@@ -130,5 +175,38 @@ describe('parseCart / serializeCart', () => {
     it('returns an empty cart for non-object payloads', () => {
         expect(parseCart('null')).toEqual(empty);
         expect(parseCart('{"items":{}}')).toEqual(empty);
+    });
+    it('reads the coupon code, trimmed and limited to 40 chars', () => {
+        expect(parseCart('{"items":[],"couponCode":"  TV10 "}').couponCode).toBe('TV10');
+        expect(parseCart('{"items":[],"couponCode":5}').couponCode).toBeNull();
+        expect(parseCart('{"items":[],"couponCode":"   "}').couponCode).toBeNull();
+        expect(parseCart(JSON.stringify({ items: [], couponCode: 'x'.repeat(41) })).couponCode).toBeNull();
+    });
+    it('accepts the previous stored shape without couponCode', () => {
+        const parsed = parseCart(JSON.stringify({ items: [{ ...shirt, quantity: 1 }] }));
+        expect(parsed.couponCode).toBeNull();
+        expect(parsed.items).toHaveLength(1);
+    });
+    it('round-trips the coupon', () => {
+        const cart = setCoupon(addItem(empty, shirt, 1), 'TV10');
+        expect(parseCart(serializeCart(cart))).toEqual(cart);
+    });
+});
+
+describe('setCoupon / clearCart', () => {
+    it('trims, nulls empty and limits to 40 chars', () => {
+        expect(setCoupon(empty, '  TV10  ').couponCode).toBe('TV10');
+        expect(setCoupon(empty, '   ').couponCode).toBeNull();
+        expect(setCoupon(empty, null).couponCode).toBeNull();
+        expect(setCoupon(empty, 'x'.repeat(50)).couponCode).toHaveLength(40);
+    });
+    it('keeps the coupon across item changes', () => {
+        const cart = setCoupon(addItem(empty, shirt, 1), 'TV10');
+        expect(addItem(cart, set).couponCode).toBe('TV10');
+        expect(setQuantity(cart, 'p1', 3).couponCode).toBe('TV10');
+        expect(removeItem(cart, 'p1').couponCode).toBe('TV10');
+    });
+    it('clearCart returns an empty cart', () => {
+        expect(clearCart()).toEqual(empty);
     });
 });

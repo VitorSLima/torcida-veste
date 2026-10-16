@@ -11,19 +11,34 @@ export type CartItem = {
     image: string | null;
     quantity: number;
 };
-export type Cart = { items: CartItem[] };
+export type Cart = { items: CartItem[]; couponCode: string | null };
 export type CartProduct = Omit<CartItem, 'quantity'>;
 
+const MAX_COUPON_LENGTH = 40;
 const money = (value: number) => Math.round(value * 100) / 100;
+
+const normalizeCoupon = (value: unknown): string | null => {
+    if (typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    return trimmed && trimmed.length <= MAX_COUPON_LENGTH ? trimmed : null;
+};
+
+export const clearCart = (): Cart => ({ items: [], couponCode: null });
+
+export function setCoupon(cart: Cart, code: string | null): Cart {
+    const trimmed = code?.trim().slice(0, MAX_COUPON_LENGTH) ?? '';
+    return { ...cart, couponCode: trimmed || null };
+}
 
 export function addItem(cart: Cart, product: CartProduct, quantity = 1): Cart {
     const existing = cart.items.find((item) => item.productId === product.productId);
 
     if (!existing) {
-        return { items: [...cart.items, { ...product, quantity: clampQuantity(quantity) }] };
+        return { ...cart, items: [...cart.items, { ...product, quantity: clampQuantity(quantity) }] };
     }
 
     return {
+        ...cart,
         items: cart.items.map((item) =>
             item.productId === product.productId
                 ? { ...item, quantity: clampQuantity(item.quantity + quantity) }
@@ -36,6 +51,7 @@ export function setQuantity(cart: Cart, productId: string, quantity: number): Ca
     if (quantity <= 0) return removeItem(cart, productId);
 
     return {
+        ...cart,
         items: cart.items.map((item) =>
             item.productId === productId ? { ...item, quantity: clampQuantity(quantity) } : item,
         ),
@@ -43,14 +59,14 @@ export function setQuantity(cart: Cart, productId: string, quantity: number): Ca
 }
 
 export function removeItem(cart: Cart, productId: string): Cart {
-    return { items: cart.items.filter((item) => item.productId !== productId) };
+    return { ...cart, items: cart.items.filter((item) => item.productId !== productId) };
 }
 
 export function cartCount(cart: Cart): number {
     return cart.items.reduce((sum, item) => sum + item.quantity, 0);
 }
 
-export function cartTotals(cart: Cart) {
+export function cartTotals(cart: Cart, couponDiscount = 0) {
     let subtotal = 0;
     let payable = 0;
 
@@ -60,13 +76,18 @@ export function cartTotals(cart: Cart) {
         payable += item.price * item.quantity;
     }
 
-    const shipping = shippingFor(money(payable));
+    const goods = money(payable);
+    const coupon = Math.min(money(Math.max(couponDiscount, 0)), goods);
+    const savings = money(subtotal - payable);
+    const shipping = shippingFor(money(goods - coupon));
 
     return {
         subtotal: money(subtotal),
-        savings: money(subtotal - payable),
+        savings,
+        couponDiscount: coupon,
+        discounts: money(savings + coupon),
         shipping,
-        total: money(payable + shipping),
+        total: money(goods - coupon + shipping),
         itemCount: cartCount(cart),
     };
 }
@@ -86,13 +107,14 @@ const isValidItem = (item: unknown): item is CartItem => {
 };
 
 export function parseCart(raw: string | null): Cart {
-    if (!raw) return { items: [] };
+    if (!raw) return clearCart();
 
     try {
         const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed?.items)) return { items: [] };
+        if (!Array.isArray(parsed?.items)) return clearCart();
 
         return {
+            couponCode: normalizeCoupon(parsed.couponCode),
             items: parsed.items.filter(isValidItem).flatMap((item: CartItem) => {
                 if (item.quantity <= 0) return [];
                 return [
@@ -108,6 +130,6 @@ export function parseCart(raw: string | null): Cart {
             }),
         };
     } catch {
-        return { items: [] };
+        return clearCart();
     }
 }
