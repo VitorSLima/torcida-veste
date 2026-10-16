@@ -1,6 +1,7 @@
-import { ShoppingCart, User } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { UserMenu } from '@/components/auth/user-menu';
 import { Button } from '@/components/ui/button';
 import { MobileNav } from './mobile-nav';
 import { NAV_LINKS } from './nav-links';
@@ -49,16 +50,9 @@ export function SiteHeader() {
                     >
                         <ShoppingCart />
                     </Button>
-                    <Button
-                        asChild
-                        variant="outline"
-                        size="icon"
-                        className="hidden border-foreground bg-background md:inline-flex"
-                    >
-                        <Link href="/entrar" aria-label="Minha conta">
-                            <User />
-                        </Link>
-                    </Button>
+                    <div className="hidden md:block">
+                        <UserMenu />
+                    </div>
                 </div>
             </div>
 
