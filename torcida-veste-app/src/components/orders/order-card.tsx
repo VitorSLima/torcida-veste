@@ -17,8 +17,8 @@ const TONE: Record<StatusTone, string> = {
 function Field({ label, children, className = '' }: { label: string; children: React.ReactNode; className?: string }) {
     return (
         <div className={className}>
-            <dt className="text-xs font-bold uppercase text-muted-foreground">{label}</dt>
-            <dd className="mt-1 text-sm font-bold">{children}</dd>
+            <dt className="text-sm font-extrabold uppercase">{label}</dt>
+            <dd className="mt-1 text-sm text-muted-foreground">{children}</dd>
         </div>
     );
 }
@@ -39,27 +39,26 @@ export function OrderCard({ order, defaultOpen = false }: { order: Order; defaul
             <dl className="grid grid-cols-2 items-center gap-4 md:grid-cols-5">
                 <Field label="Número do pedido">{formatOrderNumber(order.number)}</Field>
                 <Field label="Status">
-                    <span className={TONE[statusTone(order.status)]}>{statusLabel(order.status)}</span>
+                    <span className={`font-bold ${TONE[statusTone(order.status)]}`}>{statusLabel(order.status)}</span>
                 </Field>
                 <Field label="Data">{formatOrderDate(order.createdAt)}</Field>
                 <Field label="Pagamento">Cartão</Field>
                 <div className="col-span-2 md:col-span-1 md:justify-self-end">
-                    <Button
+                    <button
                         type="button"
-                        variant="outline"
                         aria-expanded={open}
                         aria-controls={panelId}
                         onClick={() => setOpen((current) => !current)}
-                        className="w-full border-foreground bg-transparent text-xs font-bold md:w-auto"
+                        className="inline-flex items-center gap-2 text-sm font-bold text-primary"
                     >
-                        Detalhes do Pedido
                         <ChevronDown aria-hidden className={`size-4 transition-transform ${open ? 'rotate-180' : ''}`} />
-                    </Button>
+                        Detalhes do Pedido
+                    </button>
                 </div>
             </dl>
 
             {open && (
-                <div id={panelId} className="mt-6 space-y-6">
+                <div id={panelId} className="mt-6 space-y-6 border-t border-border pt-6">
                     <ul className="space-y-5">
                         {order.items.map((item) => (
                             <li key={item.productId} className="flex gap-4">
@@ -69,14 +68,14 @@ export function OrderCard({ order, defaultOpen = false }: { order: Order; defaul
                                     )}
                                 </div>
                                 <div className="min-w-0 flex-1 space-y-1">
-                                    <p className="text-xs text-muted-foreground">
-                                        Vendido e entregue por: <strong className="text-foreground">Torcida Veste</strong>
+                                    <p className="inline-block rounded bg-card px-2 py-1 text-xs">
+                                        Vendido e entregue por: <strong>Torcida Veste</strong>
                                     </p>
                                     <p className="text-sm">{item.name}</p>
                                     <p className="text-sm text-muted-foreground">Quantidade: {item.quantity}</p>
                                 </div>
                                 <div className="shrink-0 text-right">
-                                    <p className="text-sm font-bold">{formatBRL(item.unitPrice)}</p>
+                                    <p className="text-lg font-extrabold">{formatBRL(item.unitPrice)}</p>
                                     {item.originalPrice != null && item.originalPrice > item.unitPrice && (
                                         <p className="text-xs text-muted-foreground">
                                             De: <span className="line-through">{formatBRL(item.originalPrice)}</span>
