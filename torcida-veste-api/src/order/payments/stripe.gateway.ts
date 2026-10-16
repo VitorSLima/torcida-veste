@@ -50,6 +50,13 @@ export class StripeGateway extends PaymentGateway {
                         },
                     },
                 ],
+                branding_settings: {
+                    display_name: 'Torcida Veste',
+                    logo: { type: 'url', url: `${new URL(input.successUrl).origin}/brand/logo.png` },
+                    background_color: '#0b0b0b',
+                    button_color: '#41f800',
+                    border_style: 'rounded',
+                },
                 success_url: input.successUrl,
                 cancel_url: input.cancelUrl,
                 expires_at: input.expiresAt,
