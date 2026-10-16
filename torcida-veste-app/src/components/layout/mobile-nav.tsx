@@ -45,6 +45,15 @@ export function MobileNav() {
                             {link.label}
                         </Link>
                     ))}
+                    {user && (
+                        <Link
+                            href="/pedidos"
+                            onClick={() => setOpen(false)}
+                            className="rounded-full border border-foreground px-6 py-3 text-center text-sm font-bold"
+                        >
+                            Meus pedidos
+                        </Link>
+                    )}
                     {user ? (
                         <button
                             type="button"

@@ -41,6 +41,9 @@ export function UserMenu() {
                     <span className="block text-xs font-normal text-muted-foreground">{user.email}</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                    <Link href="/pedidos">Meus pedidos</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => void logout()}>Sair</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
