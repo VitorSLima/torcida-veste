@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useCart } from '@/components/cart/cart-provider';
 import { Button } from '@/components/ui/button';
 import type { Product } from '@/lib/types';
 import { DiscountBadge } from './discount-badge';
@@ -10,6 +11,7 @@ import { formatBRL } from '@/lib/format';
 
 export function ProductInfo({ product }: { product: Product }) {
     const [quantity, setQuantity] = useState(1);
+    const { add } = useCart();
     const inStock = product.stock_status === 'IN_STOCK';
 
     return (
@@ -50,6 +52,18 @@ export function ProductInfo({ product }: { product: Product }) {
                 type="button"
                 size="lg"
                 disabled={!inStock}
+                onClick={() =>
+                    add(
+                        {
+                            productId: product.id,
+                            name: product.name,
+                            price: product.price,
+                            originalPrice: product.originalPrice,
+                            image: (product.Images.find((i) => i.is_Cover) ?? product.Images[0])?.url ?? null,
+                        },
+                        quantity,
+                    )
+                }
                 className="mt-4 h-12 w-full bg-primary font-extrabold uppercase text-primary-foreground hover:bg-primary/90"
             >
                 Adicionar ao carrinho

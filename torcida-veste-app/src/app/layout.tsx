@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import { SessionProvider } from '@/components/auth/session-provider';
+import { CartDrawer } from '@/components/cart/cart-drawer';
+import { CartProvider } from '@/components/cart/cart-provider';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import './globals.css';
@@ -28,9 +30,12 @@ export default function RootLayout({
         <html lang="pt-BR" className={poppins.variable}>
             <body className="flex min-h-dvh flex-col bg-background font-sans text-foreground antialiased">
                 <SessionProvider>
-                    <SiteHeader />
-                    <main className="flex-1">{children}</main>
-                    <SiteFooter />
+                    <CartProvider>
+                        <SiteHeader />
+                        <main className="flex-1">{children}</main>
+                        <SiteFooter />
+                        <CartDrawer />
+                    </CartProvider>
                 </SessionProvider>
             </body>
         </html>

@@ -1,8 +1,7 @@
-import { ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { UserMenu } from '@/components/auth/user-menu';
-import { Button } from '@/components/ui/button';
+import { CartButton } from '@/components/cart/cart-button';
 import { MobileNav } from './mobile-nav';
 import { NAV_LINKS } from './nav-links';
 import { SearchForm } from './search-form';
@@ -42,14 +41,7 @@ export function SiteHeader() {
                 </div>
 
                 <div className="flex items-center gap-2 md:ml-auto">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        aria-label="Carrinho"
-                        className="border-foreground bg-background"
-                    >
-                        <ShoppingCart />
-                    </Button>
+                    <CartButton />
                     <div className="hidden md:block">
                         <UserMenu />
                     </div>
