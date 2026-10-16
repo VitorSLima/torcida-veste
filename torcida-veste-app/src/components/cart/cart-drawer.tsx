@@ -26,7 +26,7 @@ export function CartDrawer() {
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
-            <SheetContent side="right" className="w-full gap-0 border-border bg-background p-0 sm:max-w-[430px]">
+            <SheetContent side="right" className="gap-0 border-border bg-background p-0 data-[side=right]:w-full data-[side=right]:sm:max-w-[430px]">
                 <SheetHeader className="p-6 pb-4">
                     <SheetTitle className="inline-flex w-fit items-center gap-2 rounded-full border-2 border-primary px-4 py-1.5 text-base font-extrabold uppercase">
                         <ShoppingCart aria-hidden className="size-5" />
