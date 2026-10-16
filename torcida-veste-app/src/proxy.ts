@@ -10,4 +10,4 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(login);
 }
 
-export const config = { matcher: ['/pedidos/:path*'] };
+export const config = { matcher: ['/pedidos/:path*', '/checkout/:path*', '/checkout'] };
