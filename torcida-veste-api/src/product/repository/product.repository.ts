@@ -69,6 +69,13 @@ export class ProductsRepository {
         });
     }
 
+    async findProductsByIds(ids: string[]) {
+        return this.prisma.product.findMany({
+            where: { id: { in: ids } },
+            select: productSelect,
+        });
+    }
+
     async findAllProducts(query: ProductQueryDto) {
         const { page, limit, search, onSale, categoryId, leagueId } = query;
 

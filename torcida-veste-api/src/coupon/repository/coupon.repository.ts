@@ -54,6 +54,7 @@ export class CouponsRepository {
         where: {
           code: {
             equals: code,
+            mode: 'insensitive',
           }
         },
       });
