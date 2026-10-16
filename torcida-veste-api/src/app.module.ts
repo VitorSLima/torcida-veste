@@ -9,6 +9,7 @@ import { SharedModule } from './shared/shared.module';
 import { UsersModule } from './users/users.module';
 import { ProductModule } from './product/product.module';
 import { AddressModule } from './address/address.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { AddressModule } from './address/address.module';
         CategoryModule,
         CouponModule,
         LeagueModule,
+        OrderModule,
         ProductModule,
         SharedModule,
         UsersModule,
