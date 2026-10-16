@@ -26,6 +26,10 @@ describe('isExpired', () => {
     it('treats the last 30 seconds as expired', () => {
         expect(isExpired(jwt({ exp: now / 1000 + 20 }), now)).toBe(true);
     });
+    it('treats exactly 30 seconds left as expired (boundary)', () => {
+        expect(isExpired(jwt({ exp: now / 1000 + 30 }), now)).toBe(true);
+        expect(isExpired(jwt({ exp: now / 1000 + 31 }), now)).toBe(false);
+    });
     it('treats unreadable tokens as expired', () => {
         expect(isExpired('garbage', now)).toBe(true);
     });
