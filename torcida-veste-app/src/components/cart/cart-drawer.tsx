@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useSession } from '@/components/auth/session-provider';
-import { formatBRL } from '@/lib/format';
 import { CartLine } from './cart-line';
+import { CartSummary } from './cart-summary';
+import { CouponField } from './coupon-field';
 import { useCart } from './cart-provider';
 
 const CHECKOUT = '/checkout';
@@ -16,13 +17,6 @@ export function CartDrawer() {
     const { user } = useSession();
     const empty = cart.items.length === 0;
     const href = user ? CHECKOUT : `/entrar?next=${encodeURIComponent(CHECKOUT)}`;
-
-    const row = (label: string, value: string, strong = false) => (
-        <div className={`flex items-center justify-between border-t border-border py-3 text-sm ${strong ? 'font-bold' : ''}`}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-        </div>
-    );
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
@@ -50,12 +44,8 @@ export function CartDrawer() {
                                     <CartLine key={item.productId} item={item} />
                                 ))}
                             </ul>
-                            <dl>
-                                {row('Subtotal', formatBRL(totals.subtotal))}
-                                {row('Entrega', totals.shipping === 0 ? 'Grátis' : formatBRL(totals.shipping))}
-                                {row('Descontos', totals.savings > 0 ? `- ${formatBRL(totals.savings)}` : formatBRL(0))}
-                                {row('Total', formatBRL(totals.total), true)}
-                            </dl>
+                            <CouponField />
+                            <CartSummary totals={totals} />
                         </>
                     )}
                 </div>
