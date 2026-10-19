@@ -1,9 +1,15 @@
 import { cookies } from 'next/headers';
 import { AuthApiError, register } from '@/lib/auth-api';
 import { validateRegister } from '@/lib/auth-schema';
+import { clientKey, createRateLimiter, tooManyRequests } from '@/lib/rate-limit';
 import { writeSession } from '@/lib/session-store';
 
+const limiter = createRateLimiter({ windowMs: 60_000, max: 5 });
+
 export async function POST(request: Request) {
+    const limit = limiter(clientKey(request));
+    if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
+
     const parsed = validateRegister(await request.json().catch(() => null));
     if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 400 });
 
