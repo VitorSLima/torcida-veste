@@ -20,6 +20,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { ExchangeCodeDto } from './dto/exchange-code.dto';
 import { GoogleCallbackGuard } from './guards/google-callback.guard';
+import { Throttle } from '@nestjs/throttler';
 import { validateEnv } from '../config/env';
 
 @Controller('auth')
@@ -29,6 +30,7 @@ export class AuthController {
         private readonly authService: AuthService,
     ) {}
 
+    @Throttle({ default: { limit: 10, ttl: 60_000 } })
     @UseGuards(LocalAuthGuard)
     @Post()
     async create(@Req() req) {
@@ -48,6 +50,7 @@ export class AuthController {
         };
     }
 
+    @Throttle({ default: { limit: 5, ttl: 60_000 } })
     @Post('register')
     async register(
         @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -56,6 +59,7 @@ export class AuthController {
         return this.authService.register(data);
     }
 
+    @Throttle({ default: { limit: 30, ttl: 60_000 } })
     @UseGuards(JwtRefreshGuard)
     @Put()
     async update(
@@ -83,6 +87,7 @@ export class AuthController {
         res.redirect(`${frontendUrl}/auth/google/callback?code=${code}`);
     }
 
+    @Throttle({ default: { limit: 20, ttl: 60_000 } })
     @Post('google/exchange')
     async exchangeGoogleCode(
         @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))

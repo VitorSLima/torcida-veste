@@ -1,3 +1,6 @@
+const MAX_NAME = 80;
+const MAX_EMAIL = 254;
+
 export type FieldErrors = Record<string, string>;
 type Result<T> = { ok: true; data: T } | { ok: false; errors: FieldErrors };
 
@@ -16,8 +19,9 @@ export function validateLogin(input: unknown): Result<LoginData> {
     const password = read(input, 'password');
     const errors: FieldErrors = {};
 
-    if (!EMAIL.test(email)) errors.email = 'Informe um e-mail válido';
+    if (!EMAIL.test(email) || email.length > MAX_EMAIL) errors.email = 'Informe um e-mail válido';
     if (!password) errors.password = 'Informe sua senha';
+    else if (password.length > 72) errors.password = 'A senha deve ter no máximo 72 caracteres';
 
     return Object.keys(errors).length ? { ok: false, errors } : { ok: true, data: { email, password } };
 }
@@ -30,8 +34,10 @@ export function validateRegister(input: unknown): Result<RegisterData> {
     const errors: FieldErrors = {};
 
     if (!firstName) errors.firstName = 'Informe seu nome';
+    else if (firstName.length > MAX_NAME) errors.firstName = 'Nome muito longo';
     if (!lastName) errors.lastName = 'Informe seu sobrenome';
-    if (!EMAIL.test(email)) errors.email = 'Informe um e-mail válido';
+    else if (lastName.length > MAX_NAME) errors.lastName = 'Sobrenome muito longo';
+    if (!EMAIL.test(email) || email.length > MAX_EMAIL) errors.email = 'Informe um e-mail válido';
     if (password.length < 8) errors.password = 'A senha deve ter pelo menos 8 caracteres';
     else if (password.length > 72) errors.password = 'A senha deve ter no máximo 72 caracteres';
 

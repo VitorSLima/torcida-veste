@@ -38,3 +38,21 @@ describe('validateRegister', () => {
         expect(result.ok && 'role' in result.data).toBe(false);
     });
 });
+
+describe('size limits', () => {
+    it('rejects oversized login fields', () => {
+        const result = validateLogin({ email: `${'a'.repeat(250)}@b.com`, password: 'x'.repeat(73) });
+        expect(result.ok).toBe(false);
+        if (!result.ok) expect(Object.keys(result.errors).sort()).toEqual(['email', 'password']);
+    });
+    it('rejects oversized names and e-mail on register', () => {
+        const result = validateRegister({
+            firstName: 'a'.repeat(81),
+            lastName: 'b'.repeat(81),
+            email: `${'c'.repeat(250)}@d.com`,
+            password: '12345678',
+        });
+        expect(result.ok).toBe(false);
+        if (!result.ok) expect(Object.keys(result.errors).sort()).toEqual(['email', 'firstName', 'lastName']);
+    });
+});

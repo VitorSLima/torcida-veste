@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { QuoteOrderDto } from './dto/quote-order.dto';
@@ -20,11 +21,13 @@ export class OrdersController {
         private readonly findOrder: FindOrderUseCase,
     ) {}
 
+    @Throttle({ default: { limit: 120, ttl: 60_000 } })
     @Post('quote')
     quote(@Body(pipe()) dto: QuoteOrderDto) {
         return this.quoteOrder.execute(dto);
     }
 
+    @Throttle({ default: { limit: 10, ttl: 60_000 } })
     @UseGuards(JwtAuthGuard)
     @Post()
     create(@Req() req: AuthedRequest, @Body(pipe()) dto: CreateOrderDto) {
