@@ -1,8 +1,11 @@
 import { BadRequestException, Controller, Headers, HttpCode, Post, RawBodyRequest, Req } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Request } from 'express';
 import { PaymentGateway } from './payments/payment.gateway';
 import { HandlePaymentEventUseCase } from './use-cases/handle-payment-event.use-case';
 
+// Stripe retries and bursts events from its own IPs; authenticity is the signature, not a rate.
+@SkipThrottle()
 @Controller('payments')
 export class PaymentsController {
     constructor(
