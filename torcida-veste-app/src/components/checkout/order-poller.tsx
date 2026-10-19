@@ -2,6 +2,7 @@
 
 import { CircleCheck, CircleX, Clock, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useCart } from '@/components/cart/cart-provider';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,8 @@ import { nextPollState, POLL_INTERVAL_MS, type PollState } from '@/lib/order-pol
 import type { Order } from '@/lib/order-types';
 
 type View = { state: PollState | 'invalid'; number?: number };
+
+const HOME_REDIRECT_MS = 4000;
 
 const VALID_ID = /^[\w-]{1,64}$/;
 
@@ -26,6 +29,7 @@ async function fetchOrder(id: string, signal: AbortSignal): Promise<{ order: Ord
 
 export function OrderPoller({ orderId }: { orderId: string }) {
     const { clear } = useCart();
+    const router = useRouter();
     const valid = VALID_ID.test(orderId);
     const [view, setView] = useState<View>({ state: 'pending' });
 
@@ -61,6 +65,13 @@ export function OrderPoller({ orderId }: { orderId: string }) {
     }, [orderId, valid]);
 
     const state = valid ? view.state : 'invalid';
+
+    useEffect(() => {
+        if (state !== 'paid') return;
+        const timer = setTimeout(() => router.push('/'), HOME_REDIRECT_MS);
+        return () => clearTimeout(timer);
+    }, [state, router]);
+
     const orders = (
         <Button asChild variant="outline" className="h-12 border-foreground bg-transparent font-extrabold uppercase">
             <Link href="/pedidos">Ver meus pedidos</Link>
@@ -85,9 +96,10 @@ export function OrderPoller({ orderId }: { orderId: string }) {
                         <h1 className="text-xl font-extrabold">
                             Pagamento confirmado!{view.number != null && ` Pedido ${formatOrderNumber(view.number)}`}
                         </h1>
+                        <p className="text-sm text-muted-foreground">Voltando para o início…</p>
                         <div className="flex flex-col gap-3">
                             <Button asChild className="h-12 bg-primary font-extrabold uppercase text-primary-foreground hover:bg-primary/90">
-                                <Link href="/produtos">Continuar comprando</Link>
+                                <Link href="/">Voltar ao início</Link>
                             </Button>
                             {orders}
                         </div>
