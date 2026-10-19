@@ -1,16 +1,18 @@
 version: '3'
 
 services:
-  mysql:
-    image: mysql:latest
-    container_name: torcida-veste-db
+  postgres:
+    image: postgres:16
+    container_name: torcida-veste-pg
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: torcida-veste
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: torcida-veste
     ports:
-      - 3306:3306
+      - 5433:5432
     volumes:
-      - ./db:/var/lib/mysql
+      - pgdata:/var/lib/postgresql/data
     restart: always
+
+volumes:
+  pgdata:

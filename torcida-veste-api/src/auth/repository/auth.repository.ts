@@ -7,56 +7,82 @@ import { InputCreateRefreshTokenInput } from './inputs/create-refresh-token.inpu
 
 @Injectable()
 export class AuthRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly generateIdProvider: GenerateIdProvider,
-  ) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly generateIdProvider: GenerateIdProvider,
+    ) {}
 
-  async createRefreshToken(
-    refreshTokenPayload: InputCreateRefreshTokenInput,
-  ): Promise<void> {
-    const refreshTokenId = this.generateIdProvider.generate();
+    async createRefreshToken(
+        refreshTokenPayload: InputCreateRefreshTokenInput,
+    ): Promise<void> {
+        const refreshTokenId = this.generateIdProvider.generate();
 
-    await this.prisma.session.create({
-      data: {
-        id: refreshTokenId,
-        refresh_token: refreshTokenPayload.refresh_token,
-        expires_at: refreshTokenPayload.expires_at,
-        user_id: refreshTokenPayload.user_id,
-      },
-    });
-  }
+        await this.prisma.session.create({
+            data: {
+                id: refreshTokenId,
+                refresh_token: refreshTokenPayload.refresh_token,
+                expires_at: refreshTokenPayload.expires_at,
+                user_id: refreshTokenPayload.user_id,
+            },
+        });
+    }
 
-  async findRefreshToken(refreshTokenPayload: InputFindRefreshTokenRepository) {
-    const refreshToken = await this.prisma.session.findFirst({
-      where: {
-        refresh_token: refreshTokenPayload.refresh_token,
-        user_id: refreshTokenPayload.user_id,
-      },
-    });
+    async findRefreshToken(
+        refreshTokenPayload: InputFindRefreshTokenRepository,
+    ) {
+        if (
+            typeof refreshTokenPayload.refresh_token !== 'string' ||
+            refreshTokenPayload.refresh_token.length === 0
+        ) {
+            return null;
+        }
 
-    return refreshToken;
-  }
+        const refreshToken = await this.prisma.session.findFirst({
+            where: {
+                refresh_token: refreshTokenPayload.refresh_token,
+                user_id: refreshTokenPayload.user_id,
+            },
+        });
 
-  async deleteRefreshToken(refreshTokenId: string): Promise<void> {
-    await this.prisma.session.delete({
-      where: {
-        id: refreshTokenId,
-      },
-    });
-  }
+        return refreshToken;
+    }
 
-  async updateRefreshToken(
-    refreshTokenPayload: InputUpdateRefreshTokenRepository,
-  ) {
-    await this.prisma.session.update({
-      where: {
-        id: refreshTokenPayload.id,
-      },
-      data: {
-        refresh_token: refreshTokenPayload.refresh_token,
-        expires_at: refreshTokenPayload.expires_at,
-      },
-    });
-  }
+    async deleteRefreshToken(refreshTokenId: string): Promise<void> {
+        await this.prisma.session.delete({
+            where: {
+                id: refreshTokenId,
+            },
+        });
+    }
+
+    async updateRefreshToken(
+        refreshTokenPayload: InputUpdateRefreshTokenRepository,
+    ) {
+        await this.prisma.session.update({
+            where: {
+                id: refreshTokenPayload.id,
+            },
+            data: {
+                refresh_token: refreshTokenPayload.refresh_token,
+                expires_at: refreshTokenPayload.expires_at,
+            },
+        });
+    }
+
+    async createAuthCode(input: {
+        code_hash: string;
+        user_id: string;
+        expires_at: Date;
+    }): Promise<void> {
+        await this.prisma.authCode.create({ data: input });
+    }
+
+    async findAuthCode(code_hash: string) {
+        return this.prisma.authCode.findUnique({ where: { code_hash } });
+    }
+
+    async deleteAuthCode(id: string): Promise<boolean> {
+        const { count } = await this.prisma.authCode.deleteMany({ where: { id } });
+        return count === 1;
+    }
 }

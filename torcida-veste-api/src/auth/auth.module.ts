@@ -9,31 +9,29 @@ import { AuthRepository } from './repository/auth.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
-import { JwtWebStrategy } from './strategies/jwt-web.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
-  imports: [
-    JwtModule.register({
-      secret: authConfig.secret,
-      signOptions: {
-        expiresIn: authConfig.expiresIn,
-      },
-    }),
-    UsersModule,
-    SharedModule,
-  ],
-  controllers: [AuthController],
-  providers: [
-    AuthService,
-    AuthRepository,
-    JwtStrategy,
-    JwtWebStrategy,
-    JwtRefreshTokenStrategy,
-    LocalStrategy,
-    GoogleStrategy,
-    Logger,
-  ],
-  exports: [AuthService],
+    imports: [
+        JwtModule.register({
+            secret: authConfig.secret,
+            signOptions: {
+                expiresIn: authConfig.expiresIn,
+            },
+        }),
+        UsersModule,
+        SharedModule,
+    ],
+    controllers: [AuthController],
+    providers: [
+        AuthService,
+        AuthRepository,
+        JwtStrategy,
+        JwtRefreshTokenStrategy,
+        LocalStrategy,
+        GoogleStrategy,
+        Logger,
+    ],
+    exports: [AuthService],
 })
 export class AuthModule {}

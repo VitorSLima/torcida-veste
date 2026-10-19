@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+    ConflictException,
+    Injectable,
+    Logger,
+    NotFoundException,
+} from '@nestjs/common';
 import { ProductsRepository } from '../repository/product.repository';
 
 @Injectable()
@@ -9,7 +14,7 @@ export class DeleteProductUseCase {
     ) {}
 
     async execute(id: string) {
-        const product = this.productsRepository.findProductsById(id);
+        const product = await this.productsRepository.findProductsById(id);
         if (!product) {
             const error = new NotFoundException('Product not found');
             this.logger.error(error.message);
@@ -17,16 +22,20 @@ export class DeleteProductUseCase {
         }
 
         try {
-            this.productsRepository.deleteProduct(id);
-            this.logger.log('Product deleted', DeleteProductUseCase.name);
-            return product;
+            await this.productsRepository.deleteProduct(id);
         } catch (err) {
-            const error = new NotFoundException('Something bad happened', {
-                cause: err,
-                description: 'Error on deleting product',
-            });
-            this.logger.error(error.message);
-            throw error;
+            if (err?.code === 'P2003') {
+                const error = new ConflictException(
+                    'Product is part of existing orders',
+                );
+                this.logger.error(error.message);
+                throw error;
+            }
+            this.logger.error('Error on deleting product');
+            throw err;
         }
+
+        this.logger.log('Product deleted', DeleteProductUseCase.name);
+        return { product };
     }
 }

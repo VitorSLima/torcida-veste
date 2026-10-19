@@ -16,16 +16,18 @@ export class UpdateUserUseCase {
       this.logger.error(error.message);
       throw error;
     }
+    let updated;
     try {
-      await this.usersRepository.updateUser(id, data);
-      this.logger.log('User updated', UpdateUserUseCase.name);
+        updated = await this.usersRepository.updateUser(id, data);
+        this.logger.log('User updated', UpdateUserUseCase.name);
     } catch (err) {
-      const error = new NotFoundException('Something bad happened', {
-        cause: err,
-        description: 'Error on updating user',
-      });
-      this.logger.error(error.message);
-      throw error;
+        const error = new NotFoundException('Something bad happened', {
+            cause: err,
+            description: 'Error on updating user',
+        });
+        this.logger.error(error.message);
+        throw error;
     }
+    return { ...updated, password: undefined };
   }
 }

@@ -2,11 +2,12 @@ import { Body, Controller, Delete, Get, Injectable, Param, Patch, Post, UseGuard
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponInput } from './input/update-coupon.input';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CouponService } from './coupon.service';
 
 @Injectable()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
 @Controller('coupon')
 export class CouponController {

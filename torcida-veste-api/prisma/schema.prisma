@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -27,7 +27,7 @@ model Category {
 
 model Coupon {
   id            String        @id @unique @default(uuid())
-  code          String
+  code          String        @unique
   expiration_at String
   value         Float?
   Order         Order[]
@@ -50,25 +50,37 @@ model League {
 }
 
 model Order {
-  id           String       @id @unique @default(uuid())
-  payment_id   String
-  payment_url  String
-  created_at   String
-  updated_at   String
-  person_id    String
-  order_status ORDER_STATUS
-  OrderItems   OrderItem[]
-  coupon_id    String
-  Coupon       Coupon       @relation(fields: [coupon_id], references: [id])
+  id              String       @id @unique @default(uuid())
+  number          Int          @unique @default(autoincrement())
+  user_id         String
+  User            User         @relation(fields: [user_id], references: [id])
+  order_status    ORDER_STATUS
+  subtotal        Float
+  shipping        Float
+  discount        Float
+  coupon_discount Float        @default(0)
+  total           Float
+  payment_id      String?      @unique
+  payment_url     String?
+  coupon_id       String?
+  Coupon          Coupon?      @relation(fields: [coupon_id], references: [id])
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+  OrderItems      OrderItem[]
+
+  @@index([user_id])
 }
 
 model OrderItem {
-  id         String  @id @unique @default(uuid())
-  product_id String
-  order_id   String
-  quantity   Float
-  Product    Product @relation(fields: [product_id], references: [id])
-  Order      Order   @relation(fields: [order_id], references: [id])
+  id             String  @id @unique @default(uuid())
+  product_id     String
+  order_id       String
+  product_name   String
+  quantity       Int
+  unit_price     Float
+  original_price Float?
+  Product        Product @relation(fields: [product_id], references: [id])
+  Order          Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }
 
 model Product {
@@ -77,6 +89,7 @@ model Product {
   size         String
   description  String
   price        Float
+  originalPrice Float?
   stock_status STOCK_STATUS
   category_id  String
   league_id    String
@@ -109,7 +122,20 @@ model User {
   address_id String?
   role       ROLE?
   sessions   Session[]
+  authCodes  AuthCode[]
+  Orders     Order[]
   Address    Address?   @relation(fields: [address_id], references: [id])
+}
+
+model AuthCode {
+  id         String   @id @default(uuid())
+  code_hash  String   @unique
+  user_id    String
+  expires_at DateTime
+  User       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("auth_codes")
 }
 
 enum ROLE {
@@ -118,6 +144,8 @@ enum ROLE {
 }
 
 enum ORDER_STATUS {
+  PENDING_PAYMENT
+  PAID
   RECEIVED
   PROCESSING
   SENT

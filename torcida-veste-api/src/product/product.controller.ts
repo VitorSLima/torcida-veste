@@ -8,39 +8,35 @@ import {
     Delete,
     UseGuards,
     Query,
+    ValidationPipe,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
+import { ProductQueryDto } from './dto/product-query.dto';
 import { UpdateProductInput } from './input/update-product.input';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ProductService } from './product.service';
-import { PaginationParams } from './input/pagination-params.input';
 
 @Controller('product')
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
-    @UseGuards(JwtAuthGuard)
-    @Roles('ADMIN')
     @Post()
-    async create(@Body() data: CreateProductDto) {
-        const product = await this.productService.createProduct(data);
-        return product;
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN')
+    async create(
+        @Body(new ValidationPipe({ whitelist: true })) data: CreateProductDto,
+    ) {
+        return this.productService.createProduct(data);
     }
 
     @Get()
-    findAll(@Query() paginationParams: PaginationParams) {
-        return this.productService.findAllProducts(paginationParams);
-    }
-
-    @Get('price-promo')
-    findAllProductsByPricePromo() {
-        return this.productService.findProductsByPricePromo();
-    }
-
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.productService.findProductById(id);
+    findAll(
+        @Query(new ValidationPipe({ transform: true, whitelist: true }))
+        query: ProductQueryDto,
+    ) {
+        return this.productService.findAllProducts(query);
     }
 
     @Get('league/:league_id')
@@ -49,20 +45,25 @@ export class ProductController {
     }
 
     @Get('category/:category_id')
-    findAllCategoriesByLeague(@Param('category_id') id: string) {
+    findAllProductsByCategory(@Param('category_id') id: string) {
         return this.productService.findProductsByCategory(id);
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Roles('ADMIN')
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.productService.findProductById(id);
+    }
+
     @Patch(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN')
     async update(@Param('id') id: string, @Body() data: UpdateProductInput) {
         return this.productService.updateProduct(id, data);
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Roles('ADMIN')
     @Delete(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN')
     remove(@Param('id') id: string) {
         return this.productService.deleteProduct(id);
     }

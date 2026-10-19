@@ -1,5 +1,6 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ProductsRepository } from '../repository/product.repository';
+import { withDiscount } from '../product.mapper';
 
 @Injectable()
 export class FindProductByLeagueUseCase {
@@ -10,20 +11,11 @@ export class FindProductByLeagueUseCase {
         ),
     ) {}
 
-    async execute(data: string) {
-        try {
-            const products =
-                await this.productsRepository.findProductsByLeague(data);
-            if (!products) {
-                const error = new NotFoundException('Produtos não encontrados');
-                throw error;
-            }
+    async execute(leagueId: string) {
+        const products =
+            await this.productsRepository.findProductsByLeague(leagueId);
 
-            this.logger.log('Products found', FindProductByLeagueUseCase.name);
-            return products;
-        } catch (error) {
-            this.logger.error(error);
-            throw error;
-        }
+        this.logger.log('Products found', FindProductByLeagueUseCase.name);
+        return products.map(withDiscount);
     }
 }

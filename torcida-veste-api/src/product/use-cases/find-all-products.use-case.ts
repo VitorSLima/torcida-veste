@@ -1,34 +1,29 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ProductsRepository } from '../repository/product.repository';
-import { PaginationParams } from '../input/pagination-params.input';
+import { ProductQueryDto } from '../dto/product-query.dto';
+import { withDiscount } from '../product.mapper';
 
 @Injectable()
 export class FindAllProductsUseCase {
     constructor(
         private readonly productsRepository: ProductsRepository,
-        private readonly logger: Logger = new Logger(),
+        private readonly logger: Logger = new Logger(FindAllProductsUseCase.name),
     ) {}
 
-    async execute(paginationParams: PaginationParams) {
-        try {
-            const products = await this.productsRepository.findAllProducts(paginationParams);
+    async execute(query: ProductQueryDto) {
+        const { products, total } =
+            await this.productsRepository.findAllProducts(query);
 
-            if (!products) {
-                const error = new NotFoundException('Product not found');
-                this.logger.error(error.message);
-                throw error;
-            }
-            this.logger.log('Products found', FindAllProductsUseCase.name);
-            return {
-                products,
-            };
-        } catch (err) {
-            const error = new NotFoundException('Something bad happened', {
-                cause: err,
-                description: 'Error on find product',
-            });
-            this.logger.error(error.message);
-            throw error;
-        }
+        this.logger.log('Products found', FindAllProductsUseCase.name);
+
+        return {
+            products: products.map(withDiscount),
+            info: {
+                page: query.page,
+                limit: query.limit,
+                total,
+                totalPages: Math.ceil(total / query.limit),
+            },
+        };
     }
 }
